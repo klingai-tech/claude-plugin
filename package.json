@@ -1,0 +1,15 @@
+{
+  "name": "kling-ai-claude-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Build your own AI creative workflow with Kling MCP",
+  "scripts": {
+    "check": "node ../../scripts/verify-host-parity.mjs",
+    "test": "node ../../scripts/verify-host-parity.mjs",
+    "verify": "node ../../scripts/verify-host-parity.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

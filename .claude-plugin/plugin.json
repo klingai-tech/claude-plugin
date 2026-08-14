@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "kling-ai",
+  "displayName": "Kling AI",
+  "version": "1.0.0",
+  "description": "Build your own AI creative workflow with Kling MCP",
+  "author": {
+    "name": "KLING AI Pte Ltd"
+  },
+  "homepage": "https://klingai.com/app",
+  "license": "MIT",
+  "keywords": ["kling", "kling-ai", "claude-code", "image-generation", "video-generation", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
