@@ -1,50 +1,65 @@
 ---
 name: kling-ai
-description: Create and monitor Kling AI image and video generations through the OAuth-protected remote Kling MCP server. Use for text-to-image, image-to-image, text-to-video, image-to-video, uploads, task status, and credit checks.
+description: Coordinate Kling AI creation requests and manage reusable subjects (Elements), the motion library, uploads, credits, task status, and account switching through the remote MCP in Claude Code. Route image and video generation to their dedicated Skills.
 license: MIT
 ---
 
-# Kling AI
+# Kling AI for Claude Code
 
-Use the remote `kling-ai` MCP server at `https://klingai.com/mcp`. This plugin contains Skills and Claude Code configuration only; it does not bundle, start, or depend on a local MCP server.
+Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/plugin`. `.mcp.json` is the connection source of truth. Do not switch regions, register a second Kling MCP, or start or depend on a local MCP server.
 
-## Safety and submission contract
+## Request routing
 
-- Use OAuth through the host MCP connection flow. Never ask for an API key or expose credentials, cookies, authorization headers, private account fields, or signed URLs in logs.
-- Treat generation as a credit-consuming write action. Show the final workflow, model, duration/resolution or aspect ratio, and obtain explicit confirmation immediately before submission unless the current user message explicitly authorizes immediate submission with final settings.
-- Submit at most once per approved intent. Do not automatically retry failed or ambiguous submissions.
-- Discover the live remote tools and schemas at runtime; the provider schema overrides examples in this Skill.
-- Upload attached or local media with the remote upload tool before generation when required. Reuse the returned provider reference exactly as the live schema requires.
-- After acceptance, use the remote `query_tasks` tool when status polling is needed. Do not invent a local mock result or claim that a local card will refresh.
+- For image creation or editing, follow [kling-ai-generate-image](../kling-ai-generate-image/SKILL.md): text-to-image, image-to-image, posters, product photos, portraits, covers, and variants.
+- For video generation or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md): text-to-video, image-to-video, motion control, animation, and single-shot or multi-shot video.
+- Keep uploads, Elements, motion-library browsing, account operations, credit checks, and task status in this Skill. It also supplies the shared connection, billing, submission, and result rules for both generation Skills.
+- Motion library: browse with `motion_library_list`. Resolve the selected motion, then follow the video Skill for `motion_control` with a subject image and exactly one motion source.
+- Subject library / Elements: use `element_list`, `element_get`, `element_create`, `element_update`, or `element_delete` for the requested operation. Resolve real IDs before reuse.
+- Account and credits: use `query_membership_and_credits`; model capabilities come from `who_am_i`.
+- Existing tasks: use `query_tasks` with a known `generationId`. A status or library request never creates a generation.
+- Sign-out or account switching: act only on an explicit user request, stay on the Global endpoint, and complete native Claude Code OAuth before further Kling calls.
 
-Read [references/tool-workflows.md](references/tool-workflows.md) before a generation call. Read troubleshooting guidance only after an authorization, schema, upload, or provider failure.
+Call only tools present in the live tool list. An attachment alone does not determine its role; clarify only when first frame, tail frame, identity/product reference, editable source, motion source, or style reference would materially change the request.
 
-## OAuth client identity
+Read [asset workflows](references/asset-workflows.md) for Elements, the motion library, or uploads. Before generation, read [tool workflows](references/tool-workflows.md) and the [MCP contract](references/mcp-contract.md). Use [prompt examples](references/prompt-examples.md) for creative direction and [troubleshooting](references/troubleshooting.md) after a failure.
 
-Before OAuth dynamic client registration, include `client_name: "Plugin-Claude"`. This is OAuth metadata, not a tool argument, URL parameter, or secret. If the host cannot inject it, stop before authorization and report the limitation.
+## Connection and task identity
 
-## Workflow
+- Use OAuth through Claude Code's native MCP connection flow (`/mcp`, then the plugin's `kling-ai` server). Never request an API key, token, cookie, authorization header, or credential file. Never log private account fields, upload tickets, or signed URLs.
+- OAuth dynamic client registration uses `client_name: "Plugin-Claude"`. This is OAuth metadata, not a tool argument, URL parameter, or secret. If the host cannot inject it, stop before authorization and report the limitation.
+- Create one UUIDv7 `taskTraceId` for each unrelated new objective. Reuse it across discovery, upload, generation, and querying for that objective wherever the live tool accepts it.
+- Preserve exact returned IDs. Present `generationId` as the task number; expose `taskTraceId` only when troubleshooting requires it.
 
-1. Identify the requested generation or read-only operation.
-2. Ask only for missing creative requirements that materially affect the result.
-3. Confirm the final billable settings.
-4. Call the selected remote generation tool exactly once.
-5. Preserve and report the exact `generationId` and any `taskTraceId` returned by the provider.
-6. If the remote tool returns an MCP App resource, let the host render it and do not duplicate its media. Otherwise, report the remote result and provide one Markdown link to the primary output when available.
-7. For a direct status request, call remote `query_tasks` once and report the current state.
+## Billing and single submission
 
-## Defaults
+- Image, video, and motion generation consume credits. Call `who_am_i` before submission and select only live-supported models, arguments, enums, defaults, and media inputs. Refresh stale tool definitions before proceeding.
+- Show the final workflow, model, prompt summary, duration/resolution, aspect ratio, output count, and reference roles. Obtain explicit confirmation immediately before submission unless the current user message already authorizes immediate submission with those final settings. An upload, library operation, or credit check is not generation approval.
+- Submit at most once per approved intent. Never automatically retry or silently change models after a failure, timeout, ambiguous response, or rendering problem.
+- Do not save an Element automatically during ordinary generation. Element writes and deletion must follow the user's explicit request as described in [asset workflows](references/asset-workflows.md).
 
-Use defaults only when the user did not specify alternatives and the live schema supports them:
+## Generation and results
 
-- video resolution: `720p`
-- video duration: `5` seconds
-- text-to-video aspect ratio: `16:9`
-- image-to-video aspect ratio: derive from the first frame unless required
+1. Resolve reference roles, Elements, and motion sources; prepare local media before submission. Use the returned provider references exactly as the selected live schema requires.
+2. Confirm the final billable settings, then call the chosen generation tool once. A multi-shot plan remains one task unless the user approves separate tasks.
+3. Once `generationId` is known, use only `query_tasks` for follow-up. If the submission response is lost before an ID is known, stop and report that creation/billing state is unknown. The current MCP cannot list account history or recover a task by `taskTraceId`.
+4. If Claude Code renders the generation MCP App, let that App own task refresh. Do not poll the same task from the model or add duplicate media, thumbnails, or download links.
+5. If no App renders, query at the provider-permitted interval until terminal, cancelled, or the turn cannot continue. Report the actual state and task number, with the tool's text fallback and at most one primary result link. Do not add Markdown image/video embeds or claim an unmounted App was displayed.
+6. For an explicit status request, query once and report the current state; do not start a long polling loop.
+7. Claim completion only after terminal success with usable primary media. If work-level status exists it must also be successful; a video cover alone is not a completed video.
+
+## Quality defaults
+
+Apply only when the user has not specified another choice and the live model supports it:
+
+- Prefer full-quality models. Use Turbo, fast, or low-cost modes when the user prioritizes drafts, speed, or credit savings.
+- Images: prefer `2k` for normal delivery and `4k` for commercial or crop-heavy work; use `1k` for drafts or speed. Never lower a higher live default.
+- Videos: prefer `1080p` for normal delivery and supported `4k` for commercial or post-production work; use `720p` for drafts, cost, speed, or model limitations.
+- Generate one result unless more are requested. Use about 5 seconds for one action, about 10 seconds for two connected beats, and longer only when supported and needed. Motion-control duration comes from the selected source and live constraints.
+- Infer `9:16`, `1:1`, or `16:9` from the destination; preserve first-frame composition for image-to-video unless the tool requires an explicit ratio.
 
 ## Failure behavior
 
-- Authorization failure: direct the user to the host MCP connection flow, then retry only after authorization succeeds.
-- Invalid model or argument: refresh the live schema and revise only the unsupported field.
-- Provider task failure: explain the provider message and preserve the `generationId`; do not resubmit.
-- Lost or timed-out submission response: treat billing state as unknown and query existing tasks before considering any new submission.
+- Unauthorized: use native Claude Code OAuth and continue only after authorization succeeds.
+- Unsupported argument: refresh the live definitions, revise only unsupported settings, and obtain confirmation before a new generation.
+- Insufficient credits or provider failure: report the provider message and preserve the task number; do not resubmit.
+- Expired media URL: query the original `generationId` for current outputs before reuse. A failed refresh is not permission to create a replacement task.

@@ -1,69 +1,42 @@
-# Troubleshooting
+# Claude Code troubleshooting
 
-## A remote result card does not open
+## MCP tools are missing
 
-Claude Code supports the MCP tool call even when its current surface does not
-mount an MCP App iframe. Treat successful tool content as the result and give
-one primary output link when available. Do not register a second local MCP
-server, copy the remote App into this plugin, or claim that an unmounted card
-was displayed.
+Use `/mcp` to verify that the plugin's `kling-ai` server is enabled and points to `https://kling.ai/mcp/plugin`. After changing plugin files, run `/reload-plugins`; if the tool definitions remain stale, restart the Claude Code session and check its MCP diagnostics. Do not add a duplicate server or use an API key as a workaround.
 
-If the remote tool itself returns an App resource that Claude Code cannot
-render, preserve the tool result and report the host rendering limitation. For
-Claude Desktop or Cowork, add the same remote endpoint through the native
-connector flow; this Claude Code plugin bundle is not installed there.
+## Endpoint migration and authorization
 
-## MCP tools are missing after installation
+This release uses the Global endpoint `https://kling.ai/mcp/plugin`. The previous `https://klingai.com/mcp` endpoint belongs to a different region. Before updating an existing connection, retain any outstanding task numbers and finish their status checks through the original connection. Disconnect the old host-managed OAuth session, update the plugin, then use `/mcp` to authorize the Global account. Never transfer credentials between hosts or assume that regional task history and credits are shared.
 
-First identify the host. In claude.ai or Claude Desktop, add
-`https://klingai.com/mcp` under **Settings → Connectors**, complete OAuth, and
-enable the connector from **Search and tools**. `/reload-plugins` and local
-plugin files do not apply there. In Claude Code, reload the host's
-plugins/extensions and confirm that the `kling-ai` MCP server is enabled. If
-the tools still do not appear, restart the host and check its MCP diagnostics.
-Do not ask for an API key as a workaround.
+For an authorization failure, use `/mcp`, select the plugin's Kling server, and complete native OAuth. If sign-out or account switching was explicitly requested, call the live `logout` tool as documented and reauthorize before other Kling calls. Do not paste tokens, construct OAuth URLs manually, or add an `oauth_resource` override. `/reload-plugins` reloads plugin files; it does not refresh OAuth credentials.
 
-## Not authorized or not linked
+## Upload fails
 
-In claude.ai or Claude Desktop, open **Settings → Connectors**, select the
-Kling connector, click **Connect**, and complete OAuth. In Claude Code, run
-`/mcp`, select `kling-ai`, and complete the browser OAuth flow. The host stores
-credentials securely and refreshes access tokens automatically. Do not paste a
-key or token into chat, manually construct an OAuth URL, or add an explicit
-`oauth_resource` override.
+- Read the live `file_upload` schema and [asset workflow](asset-workflows.md).
+- A ticket is only the first step. Complete the multipart upload with `ticket` and binary `file`, then use the confirmed media URL.
+- Reuse the objective's `taskTraceId` where accepted. Never send local paths or expired signed URLs as remote media inputs.
+- If upload is unavailable or fails, stop before dependent Element writes or generation. Do not silently switch to text-only generation or loop on upload requests.
 
-Run `/reload-plugins` only after changing plugin files or reinstalling the
-plugin. It reloads the plugin and its MCP server; it is not an OAuth refresh
-operation.
+## Element or motion cannot be used
 
-## Upload or image-to-video fails
+- Resolve ambiguous names before selecting an ID. Use `element_get` to inspect the resource type and access before reuse or updates.
+- Use Elements only with explicitly compatible live models; text-to-image and text-to-video do not accept them. Preserve required image inputs and bind the ID in both prompt and structured arguments.
+- Keep the existing cover and unmodified secondary images when updating an image Element. Do not change its resource type or delete-and-recreate without explicit authorization.
+- Motion control requires a subject image and exactly one source: `motionId` or a video input. A library preview URL is not a motion ID. Validate source duration and model arguments; do not invent a `duration` parameter.
+- An empty motion library is a valid result. The current tool surface has no motion create, update, or delete operation.
 
-- Confirm `file_upload` returned a Kling URL.
-- Reuse the same UUID v7 `taskTraceId` for upload and generation.
-- Use the input name declared by the selected live model, commonly
-  `first_image` for one first frame.
-- Keep every `arguments[].value` a string.
+## Task is still running or the result App does not render
 
-## Task is still running
+If the generation MCP App is mounted, let it refresh internally. Otherwise use headless `query_tasks` at the provider-permitted interval until terminal, cancellation, or the turn cannot continue. A direct status request queries once. Keep the task number for later follow-up.
 
-Ask the Agent to query the task once with its `generationId`. Do not poll in a
-loop; the task keeps running on Kling's side even after the host session ends.
+A rendering problem is not a generation failure. Preserve the tool result and use its text fallback and at most one primary result link. Do not register a local MCP server, embed duplicate media, or claim that an unmounted App was displayed. Report success only after terminal success with usable primary media; a cover image is not the video.
 
-## Generation fails
+## Submission fails or times out
 
-Return the provider's failure message and preserve the IDs for support. Do
-not automatically create a replacement task because that may consume credits
-again.
+Do not retry generation. If a `generationId` is known, query it once. Otherwise report that creation and billing state are unknown: the current MCP cannot list account history or find a task by `taskTraceId`. Any new generation needs fresh explicit authorization.
 
-## Submission timed out and billing is unknown
-
-Do not retry the generation call. First query existing tasks using the
-available `taskTraceId`, `generationId`, or provider task-list filters. If the
-provider cannot prove whether a task was created, tell the user the billing
-state is unknown and request a deliberate decision before any new submission.
+For a provider failure, return the provider message and preserve task IDs. For unsupported arguments, refresh the live schema, revise the rejected settings, and obtain confirmation before any new generation.
 
 ## Result link expired
 
-Signed output URLs may be temporary. Query the preserved `generationId` again
-to obtain current outputs. Do not log or treat a signed URL as a permanent
-asset identifier.
+Query the original `generationId` for current outputs immediately before reuse. Do not treat signed URLs as permanent asset identifiers or log them. If the task cannot be queried in the current region, explain the limitation rather than creating a replacement task.

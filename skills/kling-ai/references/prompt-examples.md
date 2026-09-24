@@ -32,6 +32,26 @@ Status check:
 
 > Check the current status of this Kling generationId once. Do not poll repeatedly.
 
+Motion-library browsing:
+
+> List my saved motions with their names, IDs, and durations. Do not generate anything.
+
+Motion control:
+
+> Use my attached subject image with the motion named "Walking" from my library. Resolve the motion and show the supported model and final settings before submitting.
+
+Element creation:
+
+> Save these reference images as a reusable subject named "Blue sneaker". Show which image will be the cover and use the others as secondary views.
+
+Element update:
+
+> Update only the description of "Blue sneaker" to "Blue suede sneaker with white sole". Keep its cover, secondary images, and tags unchanged.
+
+Element reuse:
+
+> Use my "Blue sneaker" Element in a product image. Check its resource type and model compatibility first, and tell me if another source image is required.
+
 ## Prompt construction
 
 Prefer concrete direction in this order:

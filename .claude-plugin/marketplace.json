@@ -8,7 +8,7 @@
     {
       "name": "kling-ai",
       "source": "./",
-      "description": "Build your own AI creative workflow with Kling MCP"
+      "description": "Turn ideas into images and videos with Kling AI in Claude. Create from text or reference images, apply motion control, reuse subjects from your Elements library, and track generation progress—all through natural language."
     }
   ]
 }
