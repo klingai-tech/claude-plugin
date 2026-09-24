@@ -6,7 +6,7 @@
       version, description, author, homepage, license, `skills`, and
       `mcpServers`.
 - [ ] `.mcp.json` registers exactly one HTTP server named `kling-ai` at
-      `https://klingai.com/mcp`.
+      `https://kling.ai/mcp/plugin` (Global).
 - [ ] `skills/kling-ai/SKILL.md` has valid `name` and trigger-focused
       `description` frontmatter.
 - [ ] The archive contains README and LICENSE.
@@ -15,13 +15,24 @@
 
 ## Behavior
 
-- [ ] Claude discovers the Skill from natural image, video, upload, status,
-      and credit requests.
+- [ ] Claude discovers the Skill from image, video, motion-library, motion
+      control, Element, upload, status, credit, and account-switching requests.
+- [ ] Library browsing creates no generation; motion control requires a subject
+      image and exactly one motion source, with live model constraints.
+- [ ] Element reuse resolves real IDs with `element_get`, validates resource
+      type/model compatibility, and supplies prompt and structured bindings.
+- [ ] Element updates preserve unspecified fields and resource types; deletion
+      or delete-and-recreate follows an explicit request.
+- [ ] Uploads complete the ticket and multipart steps before dependent writes.
+- [ ] Upgrades from the old regional endpoint disconnect old OAuth before
+      authorizing the Global account; tasks/credits are not assumed to transfer.
 - [ ] OAuth uses Claude's native MCP connection flow and identifies dynamic
       client registration with `client_name: "Plugin-Claude"`.
 - [ ] A generation requires final billable-setting confirmation and one
       approved intent creates at most one task.
 - [ ] The exact `generationId` and `taskTraceId`, when returned, are preserved.
+- [ ] A lost submission without `generationId` reports unknown state and does
+      not attempt unsupported account-history or `taskTraceId` lookup.
 - [ ] MCP App resources returned by the remote server are left to the host to
       render; the Skill does not duplicate media.
 - [ ] Authorization refusal, expired authorization, provider failure, and an

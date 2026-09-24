@@ -8,7 +8,7 @@
     {
       "name": "kling-ai",
       "source": "./",
-      "description": "Build your own AI creative workflow with Kling MCP"
+      "description": "Create images and videos, use motion control, and manage reusable Elements with Kling MCP"
     }
   ]
 }

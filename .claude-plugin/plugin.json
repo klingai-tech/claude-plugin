@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "kling-ai",
   "displayName": "Kling AI",
-  "version": "1.0.0",
-  "description": "Build your own AI creative workflow with Kling MCP",
+  "version": "1.1.0",
+  "description": "Create images and videos, use motion control, and manage reusable Elements with Kling MCP",
   "author": {
     "name": "KLING AI Pte Ltd"
   },
