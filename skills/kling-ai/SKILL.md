@@ -1,6 +1,6 @@
 ---
 name: kling-ai
-description: Create and manage Kling AI images, videos, motion control, and reusable subjects (Elements) through the OAuth-protected remote MCP in Claude Code. Use for generation, motion-library browsing, Element management and reuse, uploads, credit checks, task status, and account switching.
+description: Coordinate Kling AI creation requests and manage reusable subjects (Elements), the motion library, uploads, credits, task status, and account switching through the remote MCP in Claude Code. Route image and video generation to their dedicated Skills.
 license: MIT
 ---
 
@@ -10,8 +10,10 @@ Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/
 
 ## Request routing
 
-- New images or videos: use `text_to_image` or `text_to_video` when text defines the result; use `image_to_image` or `image_to_video` when media controls identity, product, composition, or reference frames.
-- Motion library: browse with `motion_library_list`. Motion transfer uses `motion_control` with a subject image and exactly one motion source.
+- For image creation or editing, follow [kling-ai-generate-image](../kling-ai-generate-image/SKILL.md): text-to-image, image-to-image, posters, product photos, portraits, covers, and variants.
+- For video generation or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md): text-to-video, image-to-video, motion control, animation, and single-shot or multi-shot video.
+- Keep uploads, Elements, motion-library browsing, account operations, credit checks, and task status in this Skill. It also supplies the shared connection, billing, submission, and result rules for both generation Skills.
+- Motion library: browse with `motion_library_list`. Resolve the selected motion, then follow the video Skill for `motion_control` with a subject image and exactly one motion source.
 - Subject library / Elements: use `element_list`, `element_get`, `element_create`, `element_update`, or `element_delete` for the requested operation. Resolve real IDs before reuse.
 - Account and credits: use `query_membership_and_credits`; model capabilities come from `who_am_i`.
 - Existing tasks: use `query_tasks` with a known `generationId`. A status or library request never creates a generation.

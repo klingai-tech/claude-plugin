@@ -17,7 +17,7 @@ Use this reference for library operations and media preparation. The live `tools
 3. Use an Element only when both the tool and selected model explicitly support `elements`. Text-to-image and text-to-video do not use Elements. A video Element is not an image substitute.
 4. Bind the exact Element ID in both places: include `<<<ELEMENT_ID>>>` in the prompt where the subject is referenced and pass `elements` as the model-declared argument, with a JSON-array string such as `[{"id":"ELEMENT_ID","bindName":"subject"}]`. Do not use a placeholder, omit the structured binding, or invent a different field shape.
 5. An Element does not replace required image inputs. Supply `image_1`, `first_image`, or another exact live input when the selected model requires it. For motion control, the subject `image` remains required.
-6. After resolving the Element, follow the [generation workflow](tool-workflows.md) and the core Skill's confirmation, credit, single-submission, and status rules.
+6. After resolving the Element, follow the [image Skill](../../kling-ai-generate-image/SKILL.md) or [video Skill](../../kling-ai-generate-video/SKILL.md) for the requested output. Both use the core Skill's confirmation, credit, single-submission, and status rules.
 
 ## Motion library and motion control
 
@@ -26,7 +26,7 @@ Use this reference for library operations and media preparation. The live `tools
 - The current tool surface provides no motion create, update, or delete operation. Do not use `element_*` tools to manage motions.
 - For motion control, pass the subject image as the live `image` input. Use exactly one motion source: the library ID as the `motionId` argument or a source video as the live `video` input. Never pass a preview URL as `motionId`, and do not pass both sources.
 - Call `who_am_i` for the selected `motion_control` model and use only its declared `motionDirection`, `resolution`, and `keepOriginalSound` names and values. When `motionDirection=image_direction`, the motion source must satisfy the live 3–10 second constraint; do not pass the library duration as an undeclared `duration` argument.
-- Continue with the [generation workflow](tool-workflows.md). Credit checks, confirmation, one submission, and querying by `generationId` still apply.
+- Continue with the [video Skill](../../kling-ai-generate-video/SKILL.md). Credit checks, confirmation, one submission, and querying by `generationId` still apply.
 
 ## Local media uploads
 

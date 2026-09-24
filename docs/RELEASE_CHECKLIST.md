@@ -7,8 +7,10 @@
       `mcpServers`.
 - [ ] `.mcp.json` registers exactly one HTTP server named `kling-ai` at
       `https://kling.ai/mcp/plugin` (Global).
-- [ ] `skills/kling-ai/SKILL.md` has valid `name` and trigger-focused
-      `description` frontmatter.
+- [ ] `kling-ai`, `kling-ai-generate-image`, and `kling-ai-generate-video`
+      each have valid `name` and trigger-focused `description` frontmatter.
+- [ ] The main Skill routes creation to the matching generation Skill; all
+      cross-Skill links and bundled reference documents resolve.
 - [ ] The archive contains README and LICENSE.
 - [ ] The archive contains no `commands/`, local MCP server, `mcp-app`, API
       key, token, cookie, generated media, or development dependency.

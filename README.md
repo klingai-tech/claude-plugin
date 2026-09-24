@@ -2,12 +2,16 @@
 
 Build your own AI creative workflow with Kling MCP.
 
-This submission contains exactly two runtime capabilities:
+This plugin contains:
 
 - a remote OAuth MCP connection to the Global endpoint `https://kling.ai/mcp/plugin`;
-- one Claude Code Skill for image/video generation, motion-library browsing
-  and motion control, reusable subjects (Elements), uploads, task status,
-  credit checks, and account switching.
+- three Claude Code Skills with shared connection and billing rules:
+
+| Skill | Purpose |
+| --- | --- |
+| `kling-ai` | Request routing, Elements, motion-library browsing, uploads, credits, task status, and account switching |
+| `kling-ai-generate-image` | Text-to-image, image-to-image, reference handling, prompt construction, and image scene guidance |
+| `kling-ai-generate-video` | Text-to-video, image-to-video, motion control, camera direction, and single-shot or multi-shot planning |
 
 It does not bundle a local MCP server, MCP App, command, hook, agent, or API
 key. Generation runs on the remote Kling service.
@@ -70,10 +74,10 @@ Skill does not invent motion creation or deletion tools. Motion control needs
 a subject image and exactly one motion source. Available models, arguments,
 and resource limits always come from the live MCP tools.
 
-The Skill requires explicit approval of the final settings before a
-credit-consuming generation and submits each approved intent at most once.
-Library queries and uploads do not authorize generation. It discovers the
-live tool schemas at runtime and lets the host render any MCP App resource
+The Skills require explicit approval of the final settings before a
+credit-consuming generation and submit each approved intent at most once.
+Library queries and uploads do not authorize generation. They discover the
+live tool schemas at runtime and let the host render any MCP App resource
 returned by the remote server.
 
 Quality defaults follow the reference plugin: live-supported `2k` images and
