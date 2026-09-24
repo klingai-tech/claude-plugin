@@ -3,7 +3,7 @@
   "name": "kling-ai",
   "displayName": "Kling AI",
   "version": "1.1.0",
-  "description": "Create images and videos, use motion control, and manage reusable Elements with Kling MCP",
+  "description": "Turn ideas into images and videos with Kling AI in Claude. Create from text or reference images, apply motion control, reuse subjects from your Elements library, and track generation progress—all through natural language.",
   "author": {
     "name": "KLING AI Pte Ltd"
   },
