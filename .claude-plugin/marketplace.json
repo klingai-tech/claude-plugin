@@ -1,0 +1,14 @@
+{
+  "name": "klingai",
+  "description": "Kling AI plugins for Claude Code",
+  "owner": {
+    "name": "KLING AI Pte Ltd"
+  },
+  "plugins": [
+    {
+      "name": "kling-ai",
+      "source": "./",
+      "description": "Build your own AI creative workflow with Kling MCP"
+    }
+  ]
+}
