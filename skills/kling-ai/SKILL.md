@@ -11,7 +11,7 @@ Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/
 ## Request routing
 
 - For image creation or editing, follow [kling-ai-generate-image](../kling-ai-generate-image/SKILL.md): text-to-image, image-to-image, posters, product photos, portraits, covers, and variants.
-- For video generation or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md): text-to-video, image-to-video, motion control, animation, and single-shot or multi-shot video.
+- For video generation, model selection, or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md): text-to-video, image-to-video, omni reference, keyframes, motion control, animation, and single-shot or multi-shot video. Discover relevant existing and new entry points before selecting a model, including for pure-text requests.
 - Keep uploads, Elements, motion-library browsing, account operations, credit checks, and task status in this Skill. It also supplies the shared connection, billing, submission, and result rules for both generation Skills.
 - Motion library: browse with `motion_library_list`. Resolve the selected motion, then follow the video Skill for `motion_control` with a subject image and exactly one motion source.
 - Subject library / Elements: use `element_list`, `element_get`, `element_create`, `element_update`, or `element_delete` for the requested operation. Resolve real IDs before reuse.
@@ -21,19 +21,20 @@ Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/
 
 Call only tools present in the live tool list. An attachment alone does not determine its role; clarify only when first frame, tail frame, identity/product reference, editable source, motion source, or style reference would materially change the request.
 
-Read [asset workflows](references/asset-workflows.md) for Elements, the motion library, or uploads. Before generation, read [tool workflows](references/tool-workflows.md) and the [MCP contract](references/mcp-contract.md). Use [prompt examples](references/prompt-examples.md) for creative direction and [troubleshooting](references/troubleshooting.md) after a failure.
+Read [asset workflows](references/asset-workflows.md) for Elements, the motion library, or uploads. Before generation, follow [capability discovery](references/capability-discovery.md), then [model parameters](references/model-parameters.md), [tool workflows](references/tool-workflows.md), and the [MCP contract](references/mcp-contract.md). Use [prompt examples](references/prompt-examples.md) for creative direction and [troubleshooting](references/troubleshooting.md) after a failure.
 
 ## Connection and task identity
 
 - Use OAuth through Claude Code's native MCP connection flow (`/mcp`, then the plugin's `kling-ai` server). Never request an API key, token, cookie, authorization header, or credential file. Never log private account fields, upload tickets, or signed URLs.
-- OAuth dynamic client registration uses `client_name: "Plugin-Claude"`. This is OAuth metadata, not a tool argument, URL parameter, or secret. If the host cannot inject it, stop before authorization and report the limitation.
+- Let Claude Code manage OAuth discovery, client registration, and credentials through its native MCP flow. This plugin does not configure a custom OAuth client name; do not invent registration overrides or block authorization because the host cannot set one. If the real OAuth flow fails, report the sanitized error and follow [troubleshooting](references/troubleshooting.md).
 - Create one UUIDv7 `taskTraceId` for each unrelated new objective. Reuse it across discovery, upload, generation, and querying for that objective wherever the live tool accepts it.
 - Preserve exact returned IDs. Present `generationId` as the task number; expose `taskTraceId` only when troubleshooting requires it.
 
 ## Billing and single submission
 
-- Image, video, and motion generation consume credits. Call `who_am_i` before submission and select only live-supported models, arguments, enums, defaults, and media inputs. Refresh stale tool definitions before proceeding.
+- Image, video, and motion generation consume credits. Call `who_am_i` during preparation and select only models returned in the current account's `availableModels` for the chosen tool, with their declared arguments, inputs, and combination limits. Follow capability discovery for cross-tool selection and refresh stale definitions before proceeding. Do not infer model access from a tool's existence, membership tier, or static examples.
 - Show the final workflow, model, prompt summary, duration/resolution, aspect ratio, output count, and reference roles. Obtain explicit confirmation immediately before submission unless the current user message already authorizes immediate submission with those final settings. An upload, library operation, or credit check is not generation approval.
+- Include any billing disclosure required by the live model/tool in those final settings. For omni reference that declares per-second billing with input video duration included, explain both facts before submission; output duration alone is not the total billed duration. Do not invent a rate or total credit estimate.
 - Submit at most once per approved intent. Never automatically retry or silently change models after a failure, timeout, ambiguous response, or rendering problem.
 - Do not save an Element automatically during ordinary generation. Element writes and deletion must follow the user's explicit request as described in [asset workflows](references/asset-workflows.md).
 

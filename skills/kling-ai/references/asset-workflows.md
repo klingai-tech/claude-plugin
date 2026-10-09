@@ -14,8 +14,8 @@ Use this reference for library operations and media preparation. The live `tools
 
 1. With a known ID, call `element_get`. With only a name, call `element_list`, resolve the choice, then call `element_get`.
 2. Confirm that the current account can access the Element and inspect `resource` to determine whether it is an image or video resource.
-3. Use an Element only when both the tool and selected model explicitly support `elements`. Text-to-image and text-to-video do not use Elements. A video Element is not an image substitute.
-4. Bind the exact Element ID in both places: include `<<<ELEMENT_ID>>>` in the prompt where the subject is referenced and pass `elements` as the model-declared argument, with a JSON-array string such as `[{"id":"ELEMENT_ID","bindName":"subject"}]`. Do not use a placeholder, omit the structured binding, or invent a different field shape.
+3. Use an Element only when the selected model declares its binding argument and the actual resource type. Check `elementSupport` and conditional reference caps in [model parameters](model-parameters.md), including for `omni_ref_video`. Do not infer support or prohibition from the tool name. A video Element is not an image substitute.
+4. Bind the exact Element ID in the prompt and structured argument using the selected model's declared syntax and serialization. For models declaring `<<<ELEMENT_ID>>>` and an `elements` JSON-array string, use that format, such as `[{"id":"ELEMENT_ID","bindName":"subject"}]`; other models may declare additional type fields or different bindings. Do not copy an older model's shape or omit required bindings.
 5. An Element does not replace required image inputs. Supply `image_1`, `first_image`, or another exact live input when the selected model requires it. For motion control, the subject `image` remains required.
 6. After resolving the Element, follow the [image Skill](../../kling-ai-generate-image/SKILL.md) or [video Skill](../../kling-ai-generate-video/SKILL.md) for the requested output. Both use the core Skill's confirmation, credit, single-submission, and status rules.
 

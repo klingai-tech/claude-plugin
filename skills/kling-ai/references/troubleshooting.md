@@ -10,6 +10,8 @@ This release uses the Global endpoint `https://kling.ai/mcp/plugin`. The previou
 
 For an authorization failure, use `/mcp`, select the plugin's Kling server, and complete native OAuth. If sign-out or account switching was explicitly requested, call the live `logout` tool as documented and reauthorize before other Kling calls. Do not paste tokens, construct OAuth URLs manually, or add an `oauth_resource` override. `/reload-plugins` reloads plugin files; it does not refresh OAuth credentials.
 
+OAuth discovery and client registration belong to the host. Do not require a custom client name or try to add one to generation arguments, headers, or the MCP URL. If the server rejects the host's registration, preserve the sanitized error for the service maintainer instead of guessing metadata or requesting credentials in chat.
+
 ## Upload fails
 
 - Read the live `file_upload` schema and [asset workflow](asset-workflows.md).
@@ -17,10 +19,16 @@ For an authorization failure, use `/mcp`, select the plugin's Kling server, and 
 - Reuse the objective's `taskTraceId` where accepted. Never send local paths or expired signed URLs as remote media inputs.
 - If upload is unavailable or fails, stop before dependent Element writes or generation. Do not silently switch to text-only generation or loop on upload requests.
 
+## Model capability mismatch
+
+If the user says a requested model is enabled but it is absent, follow [capability discovery](capability-discovery.md): finish all tool-list pages, include `omni_ref_video` for video when present, and query remaining generation entry points before concluding the model was not returned. Check the actual connection, endpoint, and MCP version, then refresh discovery. Another client's results or website membership do not replace this connection's account-scoped capabilities.
+
+If the mismatch remains, report that the current connection did not return the requested model and the cause needs investigation. Do not label it an account-permission failure without evidence, change accounts/endpoints, probe guessed model names through generation, or silently fall back to an older model. Keep diagnostics sanitized; omit credentials, private account fields, and signed URLs.
+
 ## Element or motion cannot be used
 
 - Resolve ambiguous names before selecting an ID. Use `element_get` to inspect the resource type and access before reuse or updates.
-- Use Elements only with explicitly compatible live models; text-to-image and text-to-video do not accept them. Preserve required image inputs and bind the ID in both prompt and structured arguments.
+- Use Elements only with live models declaring both the resource type and binding argument, including conditional caps. Preserve required image inputs and use the model's prompt and structured bindings; entry point names alone do not establish support.
 - Keep the existing cover and unmodified secondary images when updating an image Element. Do not change its resource type or delete-and-recreate without explicit authorization.
 - Motion control requires a subject image and exactly one source: `motionId` or a video input. A library preview URL is not a motion ID. Validate source duration and model arguments; do not invent a `duration` parameter.
 - An empty motion library is a valid result. The current tool surface has no motion create, update, or delete operation.

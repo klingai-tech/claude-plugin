@@ -17,6 +17,15 @@
 
 ## Behavior
 
+- [ ] Complete tool discovery includes pagination; video capability queries
+      include `omni_ref_video` when present, even for pure-text requests.
+- [ ] New model selection is account-scoped; a new tool with only existing
+      models does not force migration. User-specified unavailable models are
+      not silently replaced, and discovery failures stop selection.
+- [ ] Keyframes, reference inputs, Element types, conditional combined caps,
+      and sound exclusivity follow the selected tool/model pair's live rules.
+- [ ] Generation without requested sound or multiple shots does not inherit
+      content-expanding model defaults.
 - [ ] Claude discovers the Skill from image, video, motion-library, motion
       control, Element, upload, status, credit, and account-switching requests.
 - [ ] Library browsing creates no generation; motion control requires a subject
@@ -28,8 +37,8 @@
 - [ ] Uploads complete the ticket and multipart steps before dependent writes.
 - [ ] Upgrades from the old regional endpoint disconnect old OAuth before
       authorizing the Global account; tasks/credits are not assumed to transfer.
-- [ ] OAuth uses Claude's native MCP connection flow and identifies dynamic
-      client registration with `client_name: "Plugin-Claude"`.
+- [ ] OAuth uses Claude's native MCP connection flow; client registration is
+      host-managed and no unsupported custom client-name override blocks it.
 - [ ] A generation requires final billable-setting confirmation and one
       approved intent creates at most one task.
 - [ ] The exact `generationId` and `taskTraceId`, when returned, are preserved.
@@ -42,10 +51,12 @@
 
 ## Validation
 
-- [ ] `claude plugin validate claude/kling-ai --strict` passes.
-- [ ] `node scripts/verify-host-parity.mjs` passes.
-- [ ] `npm run check --prefix claude/kling-ai` passes.
-- [ ] `npm test --prefix claude/kling-ai` passes.
+- [ ] `claude plugin validate . --strict` passes.
+- [ ] `claude plugin validate .claude-plugin/plugin.json --strict` passes.
+- [ ] Component validation reports individual Skill files without errors;
+      an empty `contents` array is not evidence of Skill validation.
+- [ ] `npm run check` passes from this repository or an isolated checkout.
+- [ ] `npm test` passes.
 - [ ] The packaged ZIP is inspected and contains only the approved files.
 - [ ] A clean Claude Code profile can install, connect, discover the Skill,
       make a read-only MCP call, and reach the pre-generation confirmation
@@ -53,9 +64,19 @@
 
 ## Directory submission metadata
 
-- [ ] Marketplace name remains `kling-ai`.
-- [ ] Category is selected from the directory's supported values; use
-      `development` unless the reviewer requests a different category.
+- [ ] Plugin name remains `kling-ai`; the repository marketplace name remains
+      `klingai`, matching the existing manifests.
+- [ ] Any category requested by the submission portal matches the plugin's
+      purpose and the portal's available values.
 - [ ] Description, author, homepage, and source location are supplied in the
       plugin directory submission form.
 - [ ] Public marketplace availability is not claimed before review and listing.
+- [ ] README describes remote prompt/media processing and accurately limits
+      compatibility claims to the surfaces actually tested.
+- [ ] The developer portal's Validate has no blocking findings for the exact
+      submitted commit, following the [official checklist](https://claude.com/docs/plugins/pre-submission-checklist).
+- [ ] Confirm the existing Kling remote MCP connector submission and its URL;
+      if absent, submit the service separately as required by the
+      [directory publishing guide](https://claude.com/docs/directory/publish).
+- [ ] Complete the portal's data-handling questions and security review using
+      verified service information; do not invent retention or privacy claims.
