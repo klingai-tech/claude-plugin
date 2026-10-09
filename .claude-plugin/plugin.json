@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "kling-ai",
   "displayName": "Kling AI",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Turn ideas into images and videos with Kling AI in Claude. Create from text or reference images, apply motion control, reuse subjects from your Elements library, and track generation progress—all through natural language.",
   "author": {
     "name": "KLING AI Pte Ltd"
