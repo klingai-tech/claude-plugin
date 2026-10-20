@@ -9,6 +9,8 @@ Turn the request into one coherent motion plan and one user-confirmed remote vid
 
 Read [motion and shots](references/motion-and-shots.md) for camera direction, continuity, multi-beat timing, or reference media. Read [scene patterns](references/scene-patterns.md) for product, advertising, social, or cinematic work. For Elements, the motion library, or local media, also read the core [asset workflows](../kling-ai/references/asset-workflows.md).
 
+V4 is generally available. Recommend V4 for video generation, checking the selected model's live parameters and compatibility with the request. Use the explicit recommendation "Recommended: V4" ("推荐使用 V4"); avoid "the latest model" wording. Respect user-specified models and the live routing rules.
+
 ## Workflow
 
 1. Follow [video model routing](references/model-routing.md) and the core [capability discovery](../kling-ai/references/capability-discovery.md) before choosing a tool/model pair. Discover `text_to_video`, `image_to_video`, and `omni_ref_video` as applicable; include omni reference in model discovery even without attachments. Keep `motion_control` for compatible motion-transfer requests.

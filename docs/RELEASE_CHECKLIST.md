@@ -19,7 +19,9 @@
 
 - [ ] Complete tool discovery includes pagination; video capability queries
       include `omni_ref_video` when present, even for pure-text requests.
-- [ ] New model selection is account-scoped; a new tool with only existing
+- [ ] V4 is generally available and recommended for video generation; user-facing
+      recommendations name V4 without calling it the latest model.
+- [ ] Model selection is account-scoped; a new tool with only existing
       models does not force migration. User-specified unavailable models are
       not silently replaced, and discovery failures stop selection.
 - [ ] Keyframes, reference inputs, Element types, conditional combined caps,

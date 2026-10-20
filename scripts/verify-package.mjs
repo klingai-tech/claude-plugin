@@ -49,13 +49,10 @@ function collect(directory) {
 }
 collect("skills");
 
-// Follow WorkBuddy's public-package policy without storing an account model snapshot.
-const rolloutOnlyName = /\bv4(?:[._-]?0)?(?:[ _-]?flash)?\b|(?<![\w.])4\.0(?![\w.])/i;
 for (const path of publicFiles) {
   assert.ok(existsSync(join(root, path)), `missing public file: ${path}`);
   if (!/\.(md|json)$/.test(path)) continue;
   const content = read(path);
-  assert.ok(!rolloutOnlyName.test(content), `rollout-only model name in public file: ${path}`);
   if (!path.endsWith(".md")) continue;
   for (const match of content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const target = match[1].split("#")[0];
@@ -66,4 +63,4 @@ for (const path of publicFiles) {
   }
 }
 
-console.log(`Claude plugin ${pkg.version} verified: metadata, MCP connection, Skill identities, public links, and model-name policy.`);
+console.log(`Claude plugin ${pkg.version} verified: metadata, MCP connection, Skill identities, and public links.`);

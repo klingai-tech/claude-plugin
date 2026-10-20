@@ -28,7 +28,7 @@ Claude Code versions that support ZIP plugin directories can load the release
 archive directly:
 
 ```bash
-claude --plugin-dir /absolute/path/to/kling-ai-claude-1.2.0-public.zip
+claude --plugin-dir /absolute/path/to/kling-ai-claude-1.3.0-public.zip
 ```
 
 For a persistent installation, distribute the plugin through a trusted Claude
@@ -68,7 +68,7 @@ Ask Claude naturally, for example:
 - Change only the description of "Blue sneaker", keeping its existing images.
 - Use this subject image with a motion from my library; show the final settings
   before generating.
-- Use the latest video model available to my account for a cinematic shot.
+- Use V4 for a cinematic video shot.
 - Combine these image and video references, preserving the source audio if the
   selected model supports it.
 
@@ -80,10 +80,11 @@ and resource limits always come from the live MCP tools.
 
 Video discovery includes `omni_ref_video` when available, even for text-only
 requests. Models are selected from the current account's `who_am_i` response;
-the plugin does not hardcode rollout model names or assume that a new tool
-grants model access. Keyframes, image/video/Element/audio references, combined
+V4 is generally available, and the plugin recommends V4 for video generation. V4 Flash is preferred when speed or credit savings are requested.
+Model identifiers and parameters come from live discovery; a tool alone does
+not establish model access. Keyframes, image/video/Element/audio references, combined
 reference limits, and sound controls follow the selected model's live rules.
-When no applicable newer model is returned, ordinary requests retain their
+When no compatible V4 model is returned, ordinary requests retain their
 existing compatible entry point and live default. An explicitly requested
 unavailable model is reported without silently substituting another model.
 
@@ -112,7 +113,7 @@ npm test
 ```
 
 The repository-local check validates metadata, the remote connection, Skill
-identities, bundled links, and exclusion of rollout-only names from public
+identities and bundled links, including support for V4 names in public
 documentation. It does not submit paid generation tasks or prove account
 access to a model; live routing and generation still require an authorized
 Claude Code connection.

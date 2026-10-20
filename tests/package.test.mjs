@@ -48,6 +48,13 @@ test("release versions are not confused with model names", (t) => {
   assert.equal(result.status, 0, result.output);
 });
 
+test("V4 model names are allowed in the public package", (t) => {
+  const directory = fixture(t);
+  append(directory, "README.md", "\nV4 · V4 Flash · kling-video-v4_0 · kling-video-v4_0_flash · 可灵4.0\n");
+  const result = verify(directory);
+  assert.equal(result.status, 0, result.output);
+});
+
 test("new linked Skill references are discovered automatically", (t) => {
   const directory = fixture(t);
   writeFileSync(join(directory, "skills/kling-ai/references/extra.md"), "# Extra reference\n");
@@ -64,9 +71,6 @@ for (const [label, mutate, expected] of [
   ["missing Skill", (dir) => rmSync(join(dir, "skills/kling-ai-generate-video/SKILL.md")), /ENOENT/],
   ...["skills/kling-ai/references/capability-discovery.md", "skills/kling-ai/references/model-parameters.md", "skills/kling-ai-generate-video/references/model-routing.md"].map((path) => [
     `missing ${path}`, (dir) => rmSync(join(dir, path)), /missing or unpackaged link/,
-  ]),
-  ...["V4 Flash", "kling-video-v4_0", "kling-video-v4_0_flash", "可灵4.0"].map((name) => [
-    `rollout name ${name}`, (dir) => append(dir, "README.md", `\n${name}\n`), /rollout-only model name/,
   ]),
   ["unpackaged reference", (dir) => {
     mkdirSync(join(dir, "docs"));
