@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "kling-ai-cn",
+  "displayName": "Kling AI CN",
+  "version": "1.3.1",
+  "description": "Kling AI CN connects Claude to the China service. Turn ideas into images and videos with Kling AI in Claude. Create from text or reference images, apply motion control, reuse subjects from your Elements library, and track generation progress—all through natural language.",
+  "author": {
+    "name": "KLING AI Pte Ltd"
+  },
+  "homepage": "https://klingai.com/app",
+  "license": "MIT",
+  "keywords": [
+    "kling",
+    "kling-ai",
+    "claude-code",
+    "image-generation",
+    "video-generation",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

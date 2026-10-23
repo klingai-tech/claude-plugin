@@ -1,138 +1,76 @@
-# Kling AI for Claude Code
+# Kling AI for Claude
 
-Build your own AI creative workflow with Kling MCP.
+One repository and one marketplace, with separate China and Global plugins.
+Both plugins are published from the default branch; choosing a region does not
+require selecting a Git branch or adding another repository.
 
-This plugin contains:
+| Directory | Plugin in Claude App | Plugin ID | MCP endpoint |
+| --- | --- | --- | --- |
+| `cn/` | Kling AI CN | `kling-ai-cn` | `https://klingai.com/mcp/plugin` |
+| `global/` | Kling AI Global | `kling-ai` | `https://kling.ai/mcp/plugin` |
 
-- a remote OAuth MCP connection to the Global endpoint `https://kling.ai/mcp/plugin`;
-- three Claude Code Skills with shared connection and billing rules:
+The Global plugin retains the existing `kling-ai` ID, so existing marketplace
+installations continue to use the Global service. The marketplace name remains
+`klingai`.
 
-| Skill | Purpose |
-| --- | --- |
-| `kling-ai` | Request routing, Elements, motion-library browsing, uploads, credits, task status, and account switching |
-| `kling-ai-generate-image` | Text-to-image, image-to-image, reference handling, prompt construction, and image scene guidance |
-| `kling-ai-generate-video` | Text-to-video, image-to-video, omni reference, keyframes, supported audio inputs, motion control, and single-shot or multi-shot planning |
+## Install in Claude App
 
-It does not bundle a local MCP server, MCP App, command, hook, agent, or API
-key. Generation runs on the remote Kling service.
+1. Open **Customize → Plugins → Add → Add marketplace → Add from a repository**.
+2. Enter `https://github.com/klingai-tech/claude-plugin` and click **Sync**.
+3. Install **Kling AI CN** for China or **Kling AI Global** for Global.
+4. Use the App's native connector controls to authorize the matching account.
 
-## Install for local review
+If the marketplace is already added, open **Add → Manage marketplaces**, find
+`claude-plugin`, and choose **Check for updates** before selecting a plugin.
+Enable only one regional Kling plugin at a time. Before switching regions,
+finish outstanding task checks in the original region, disable the old plugin,
+disconnect its OAuth connection, and authorize the other region. Accounts,
+credits, and task IDs are specific to their region.
 
-Load the plugin directory for one Claude Code session:
+## Install in Claude Code
+
+Add the marketplace once, then choose one plugin:
 
 ```bash
-claude --plugin-dir /absolute/path/to/kling-ai
+claude plugin marketplace add klingai-tech/claude-plugin
+
+# China
+claude plugin install kling-ai-cn@klingai
+
+# Global (existing plugin ID)
+claude plugin install kling-ai@klingai
 ```
 
-Claude Code versions that support ZIP plugin directories can load the release
-archive directly:
+For a local review, load the regional directory rather than the catalog root:
 
 ```bash
-claude --plugin-dir /absolute/path/to/kling-ai-claude-1.3.0-public.zip
+claude --plugin-dir ./cn
+# or
+claude --plugin-dir ./global
 ```
 
-For a persistent installation, distribute the plugin through a trusted Claude
-Code marketplace and install `kling-ai@<marketplace-name>`.
+## Plugin contents
 
-## Connect
+Each region contains its own manifest, MCP declaration, three Skills with all
+their references, README, and LICENSE. Both packages are self-contained and use
+the same generation workflows with region-specific connections and account
+instructions. They contain no local MCP server or credentials.
 
-The bundled `.mcp.json` registers one HTTP server named `kling-ai`. Open
-`/mcp`, select `kling-ai`, and complete OAuth in the browser. The plugin never
-asks users to paste an API key into chat.
+See [China plugin instructions](cn/README.md) or
+[Global plugin instructions](global/README.md) for capabilities, connection
+details, and data handling. Generation and account operations contact the
+selected remote Kling service. The Skills require approval of final settings
+before credit-consuming generation.
 
-Claude Code manages OAuth discovery, client registration, and credentials.
-The plugin does not configure a custom OAuth client name or require users to
-override registration metadata. If authorization fails, use the actual error
-from Claude Code to diagnose the connection.
-
-When upgrading from the old `https://klingai.com/mcp` connection, finish any
-outstanding task checks in the original region, disconnect the old OAuth
-session, update/reload the plugin, and authorize your Global account through
-`/mcp`. Regional accounts, credits, and task IDs must not be assumed to carry
-over. Keep only one active Kling connection.
-
-## Use
-
-Ask Claude naturally, for example:
-
-- Draw a red panda in a vintage spacesuit floating by a space station window,
-  Earth’s blue glow lighting its face, richly detailed, cinematic look.
-- Create a 5-second cinematic video: a mecha warrior crashes down from the sky,
-  shockwave blasting rocks and dust, camera rapidly pushing in with raw power.
-- Create a 15-second sneaker marketing short: open with a street hook, cut to
-  product close-ups and on-foot action within three seconds, end on a shoe
-  detail close-up.
-- Show my motion library with names and durations, without generating a video.
-- Save these product reference images as an Element named "Blue sneaker".
-- List my Elements, then show the details of "Blue sneaker".
-- Change only the description of "Blue sneaker", keeping its existing images.
-- Use this subject image with a motion from my library; show the final settings
-  before generating.
-- Use V4 for a cinematic video shot.
-- Combine these image and video references, preserving the source audio if the
-  selected model supports it.
-
-Element workflows cover creation, listing, details, updates, deletion, and
-reuse with compatible models. Motion-library management is read-only; the
-Skill does not invent motion creation or deletion tools. Motion control needs
-a subject image and exactly one motion source. Available models, arguments,
-and resource limits always come from the live MCP tools.
-
-Video discovery includes `omni_ref_video` when available, even for text-only
-requests. Models are selected from the current account's `who_am_i` response;
-V4 is generally available, and the plugin recommends V4 for video generation. V4 Flash is preferred when speed or credit savings are requested.
-Model identifiers and parameters come from live discovery; a tool alone does
-not establish model access. Keyframes, image/video/Element/audio references, combined
-reference limits, and sound controls follow the selected model's live rules.
-When no compatible V4 model is returned, ordinary requests retain their
-existing compatible entry point and live default. An explicitly requested
-unavailable model is reported without silently substituting another model.
-
-The Skills require explicit approval of the final settings before a
-credit-consuming generation and submit each approved intent at most once.
-Library queries and uploads do not authorize generation. They discover the
-live tool schemas at runtime and let the host render any MCP App resource
-returned by the remote server.
-
-Generation sends the prompt, selected settings, and reference media URLs or
-Element IDs to Kling. Local reference files are uploaded only when needed
-through the upload flow returned by Kling. Generation and asset storage run
-on the remote service; account and task queries also contact Kling.
-
-Quality defaults follow the reference plugin: live-supported `2k` images and
-`1080p` video for normal delivery, with higher quality for commercial work and
-lower-cost modes when requested. Final settings are shown before submission.
-
-## Validate
+## Validate and package
 
 ```bash
-claude plugin validate . --strict
-claude plugin validate .claude-plugin/plugin.json --strict
-npm run check
 npm test
+claude plugin validate . --strict
+claude plugin validate cn/.claude-plugin/plugin.json --strict
+claude plugin validate global/.claude-plugin/plugin.json --strict
 ```
 
-The repository-local check validates metadata, the remote connection, Skill
-identities and bundled links, including support for V4 names in public
-documentation. It does not submit paid generation tasks or prove account
-access to a model; live routing and generation still require an authorized
-Claude Code connection.
-
-For Claude's component validation, inspect the per-file `contents` in
-`claude plugin validate skills --strict --json`. An empty `contents` array
-does not establish that the Skills were checked. Local validation also does
-not replace the developer portal's directory checks or security review; see
-the [official pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist).
-
-The public ZIP must contain only the plugin manifest, remote MCP declaration,
-Skill files, README, and LICENSE. It must not contain `mcp-app`, a local server,
-credentials, or generated media.
-
-## Claude Desktop and Cowork
-
-Claude supports plugins in chat, Claude Desktop, and Cowork, with component
-support varying by surface; see [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
-This package's instructions target Claude Code. Its authentication flow,
-uploads, and result presentation have not been validated on the other
-surfaces. Do not assume Claude Code commands such as `/mcp` apply there; use
-the target host's native plugin and connector controls.
+For a manual App upload, ZIP the contents of **one** regional directory,
+including hidden files. Do not upload the entire marketplace as one plugin.
+See the [release checklist](docs/RELEASE_CHECKLIST.md) for the remaining checks.

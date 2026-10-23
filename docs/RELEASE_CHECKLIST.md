@@ -2,11 +2,14 @@
 
 ## Package shape
 
-- [ ] `.claude-plugin/plugin.json` has the immutable slug `kling-ai`, current
-      version, description, author, homepage, license, `skills`, and
-      `mcpServers`.
-- [ ] `.mcp.json` registers exactly one HTTP server named `kling-ai` at
-      `https://kling.ai/mcp/plugin` (Global).
+- [ ] The root `.claude-plugin/marketplace.json` keeps marketplace name
+      `klingai` and lists `kling-ai-cn` from `./cn` and `kling-ai` from `./global`.
+- [ ] Each regional `.claude-plugin/plugin.json` has its matching immutable
+      slug (`kling-ai-cn` or `kling-ai`), display name, current version,
+      description, author, homepage, license, `skills`, and `mcpServers`.
+- [ ] Each regional `.mcp.json` registers exactly one HTTP server named
+      `kling-ai`: China uses `https://klingai.com/mcp/plugin`; Global uses
+      `https://kling.ai/mcp/plugin`. Regional Skills use only their own endpoint.
 - [ ] `kling-ai`, `kling-ai-generate-image`, and `kling-ai-generate-video`
       each have valid `name` and trigger-focused `description` frontmatter.
 - [ ] The main Skill routes creation to the matching generation Skill; all
@@ -37,8 +40,8 @@
 - [ ] Element updates preserve unspecified fields and resource types; deletion
       or delete-and-recreate follows an explicit request.
 - [ ] Uploads complete the ticket and multipart steps before dependent writes.
-- [ ] Upgrades from the old regional endpoint disconnect old OAuth before
-      authorizing the Global account; tasks/credits are not assumed to transfer.
+- [ ] Switching regions disables the old plugin and disconnects old OAuth
+      before authorizing the new account; tasks/credits are not assumed to transfer.
 - [ ] OAuth uses Claude's native MCP connection flow; client registration is
       host-managed and no unsupported custom client-name override blocks it.
 - [ ] A generation requires final billable-setting confirmation and one
@@ -54,20 +57,24 @@
 ## Validation
 
 - [ ] `claude plugin validate . --strict` passes.
-- [ ] `claude plugin validate .claude-plugin/plugin.json --strict` passes.
+- [ ] `claude plugin validate cn/.claude-plugin/plugin.json --strict` and
+      `claude plugin validate global/.claude-plugin/plugin.json --strict` pass.
 - [ ] Component validation reports individual Skill files without errors;
       an empty `contents` array is not evidence of Skill validation.
 - [ ] `npm run check` passes from this repository or an isolated checkout.
 - [ ] `npm test` passes.
-- [ ] The packaged ZIP is inspected and contains only the approved files.
+- [ ] Both regional ZIPs are inspected independently. Each contains only its
+      own manifest, MCP configuration, Skills, README, and LICENSE; neither
+      depends on sibling or parent files. Hidden manifest files are included.
 - [ ] A clean Claude Code profile can install, connect, discover the Skill,
       make a read-only MCP call, and reach the pre-generation confirmation
       step without submitting a paid task.
 
 ## Directory submission metadata
 
-- [ ] Plugin name remains `kling-ai`; the repository marketplace name remains
-      `klingai`, matching the existing manifests.
+- [ ] Global retains plugin name `kling-ai`; China uses `kling-ai-cn`. The
+      repository marketplace name remains `klingai`. Both plugins are discoverable
+      after syncing the same default-branch repository in Claude App.
 - [ ] Any category requested by the submission portal matches the plugin's
       purpose and the portal's available values.
 - [ ] Description, author, homepage, and source location are supplied in the
