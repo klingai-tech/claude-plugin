@@ -5,15 +5,15 @@ description: Write or refine Kling AI image prompts, including prompt-only reque
 
 # Kling AI image generation
 
-Deliver the user's current step. For writing or refining an image prompt only,
-return the requested prompt and finish. Preserve composition requirements such
-as left-side copy space; do not append model, aspect-ratio, resolution or output
-count recommendations, or invitations to generate. The workflow and quality
-defaults below apply only when preparing or submitting generation, not to
-prompt-only writing.
+For prompt-only work, use the relevant creative references below and return the
+requested prompt. Preserve composition requirements such as left-side copy space.
+Leave out account queries, uploads, unsolicited submission settings, and invitations
+to generate.
 
-For generation, follow the Claude Code OAuth, billing confirmation,
-single-submission, status, and result rules in the [core Kling Skill](../kling-ai/SKILL.md).
+Use the workflow and quality defaults only when preparing or submitting generation.
+If a required image is missing, request it and explain its role before starting
+discovery. Follow the [core Kling Skill](../kling-ai/SKILL.md) for OAuth, billing,
+submission, and results.
 
 Read [prompt construction](references/prompt-construction.md) for reference images, exact copy, branded assets, or controlled variants. Read [scene patterns](references/scene-patterns.md) for product, advertising, portrait, poster, or cover work. For Element reuse or local media, also read the core [asset workflows](../kling-ai/references/asset-workflows.md).
 

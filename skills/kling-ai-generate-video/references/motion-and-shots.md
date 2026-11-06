@@ -39,6 +39,7 @@ When a continuous hand-object interaction spans a cut, explicitly repeat the sam
 ## Reference media
 
 - A first frame locks the opening composition and motion starts from it.
+- For ordered keyframes, describe the motion between consecutive supplied states and settle into the final state. Add overshoot or a return movement only when requested.
 - A tail frame defines the target ending only when the live model supports it.
 - An identity reference locks face, apparent age, hair, wardrobe, proportions, and distinguishing traits.
 - A product reference locks dimensions, material, label, logo placement, and moving parts.
