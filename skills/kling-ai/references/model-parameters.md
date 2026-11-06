@@ -7,10 +7,33 @@ Read after [capability discovery](capability-discovery.md). Use the chosen tool/
 - Treat the model's arguments and inputs as field allowlists. Satisfy required fields and dependencies; omit undeclared fields and irrelevant optional fields. When there are no inputs, omit `inputs` unless the tool schema requires otherwise.
 - Pass each argument name once and encode numbers, booleans, and JSON arrays as required by the tool schema. Use only exact enum values. Rebuild the request when changing models; do not carry over the previous model's fields.
 - Honor explicit user settings first, then apply the Skill's quality preferences only within legal choices and compatible defaults. Never use prompt text to simulate an unsupported resolution, input, or sound capability. Unsupported required settings need resolution before submission.
+- Serialize explicit supported settings as actual arguments; optional does not mean irrelevant when the user requested a value. In particular, a duration in the prompt does not override the duration default, and a first frame does not cancel an explicitly requested aspect ratio. An equivalent immutable model setting needs no invented field.
 - Follow model-specific aspect-ratio rules first. If the model says to omit the optional ratio when a first frame is supplied and the user has not requested a ratio, omit it to preserve that frame. Otherwise, when a ratio field exists, set a legal value from the requested destination or compatible live default. An automatic ratio may depend on image/video inputs; for text-only requests that disallow automatic ratio, choose a legal explicit ratio. If no ratio field exists, omit it rather than inventing an alternative name.
 - Duration must accommodate action, dialogue, pauses, and the ending within live limits. Do not delete dialogue, speed it up, or split it into multiple paid tasks to hide a conflict.
 - Content-expanding defaults must respect the user's intent: if declared and supported, explicitly select one result, a single continuous shot, and no generated sound unless the request calls for more. This includes fields such as `imageCount`, `prefer_multi_shots`, `enable_audio`, and `enable_asmr` only when that model declares them. If the model cannot meet the requested output structure or silence, explain the limitation.
 - Respect single-value enums: if `prefer_multi_shots` is declared and allows only `true`, never send `false`. Whether to omit an optional field follows the live schema and its default. This field describes smart shot splitting; its presence does not prove that every output must contain multiple shots. Neither omitting it nor choosing an entry point without it guarantees a single shot. Describe a continuous-shot prompt as the requested intent, not a guaranteed result; do not recommend another entry point as a guarantee without an explicit live capability. Do not infer an output guarantee or switch models solely from this field.
+
+### Binding example
+
+When the live outer schema uses an array of name/value pairs, a request for a
+7-second, 9:16 clip needs separate entries like these, provided the selected model
+declares both values:
+
+```json
+{
+  "arguments": [
+    {"name": "prompt", "value": "The creative description..."},
+    {"name": "duration", "value": "7"},
+    {"name": "aspect_ratio", "value": "9:16"}
+  ]
+}
+```
+
+Add the requested resolution, count and sound controls in the same format when
+declared. Do not nest those settings inside the prompt item or encode the whole
+request as its text. Keep reference inputs in the outer schema's input slots.
+Before sending, compare every explicit requirement with the actual serialized
+value or supported input; build the result summary from those values afterward.
 
 ## References and Elements
 
@@ -25,7 +48,11 @@ Apply only when using actual/required reference inputs or Elements. Read [asset 
 
 ## Sound and audio
 
-Apply only when the selected model declares the relevant capability and the request uses it or a dependency requires a decision.
+Check required sound behavior during model selection, including when an entry
+declares no audio fields. Required silence eliminates entries without a declared
+off control or explicit silent-output guarantee. Absence of a field establishes
+neither silent output nor mandatory sound. After selection, send only the controls
+that the chosen model actually declares.
 
 - Distinguish newly generated sound, preserved source-video audio, silence, dialogue, and narration. Map them only to declared controls and values; a tool-level audio description does not establish support for every model.
 - If the model makes `enable_audio` and `keepOriginalSound` mutually exclusive, never enable both. Only send either field if declared. Explain incompatible user requirements rather than hiding the conflict in the prompt.

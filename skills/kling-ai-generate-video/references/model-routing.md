@@ -6,7 +6,7 @@ First follow [capability discovery](../../kling-ai/references/capability-discove
 | --- | --- |
 | No `omni_ref_video` | Use `text_to_video`, `image_to_video`, or `motion_control` according to intent and available model capabilities. A new model returned on these tools remains eligible. |
 | `omni_ref_video` exists | Query its models together with relevant existing video tools, even for pure-text requests. Prefer a compatible V4 model returned by the account, subject to the user's model and capability requirements. |
-| No compatible V4 model is returned | For ordinary text/image/motion requests, retain the existing tool and its compatible live default. Use omni reference when its actual capabilities are needed and a returned model satisfies the request. |
+| No compatible V4 model is returned | If the user permits other models, select a compatible live default. If the user requires V4, stop and report that no eligible pair was returned; do not offer an excluded model. |
 | Discovery failed or the requested model/capability is unavailable | Resolve the discovery failure or explain the current limitation. Do not silently use an older model, remove references, or generate to test availability. |
 
 Recommend V4 for video generation when the user has not specified a model and live discovery returns a compatible V4 model. Use V4 Flash when speed or credit savings are prioritized and its live capabilities fit. Say "Recommended: V4", without describing it as "the latest model". User-specified available models take precedence. Select quality/speed variants using actual descriptions, and use real billing information for budget choices. Do not raise resolution or output count merely because V4 is available.
@@ -18,5 +18,6 @@ Recommend V4 for video generation when the user has not specified a model and li
 - Keyframes belong to whichever discovered tool/model declares the needed frame inputs. Do not hardcode them to one entry point, invent intermediate frames, or substitute identity references for frame control.
 - Motion transfer must use a model that explicitly supports that intent and all required inputs. Existing `motion_control` requests keep the subject image and exactly one motion source.
 - Do not move an omni model to `image_to_video` or `text_to_video`; tool/model pairs and their parameter sets are inseparable.
+- Required silence is an eligibility condition across these entry points. Exclude a pair without a declared off value or silent-output guarantee before ranking by model preference. An entry named text-to-video is not inherently silent; a compatible text-only omni entry remains eligible without attachments.
 
 After selection, apply [model parameters](../../kling-ai/references/model-parameters.md), including conditional reference caps, Elements, and audio exclusivity. One multi-shot plan remains one task unless separate tasks were explicitly approved. The core Skill's billing, single-submission, and result rules apply to omni reference too.

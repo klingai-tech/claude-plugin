@@ -24,6 +24,8 @@
 
 Do not stack multiple camera-movement verbs into one five-second shot.
 
+For a continuous hand-object interaction, frame the entire action path so the participating hands and object stay visible through the action and its final handoff or placement.
+
 ## Duration and multiple shots
 
 - 5 seconds: one action and one camera movement.
@@ -31,6 +33,8 @@ Do not stack multiple camera-movement verbs into one five-second shot.
 - 15 seconds or longer: plan a compact multi-beat sequence only when the live model supports it.
 
 For multiple shots, give each shot a duration, framing, one narrative task, subject action, camera movement, and continuity anchor. Shot durations must sum to the total duration. The full plan is still one generation submission.
+
+When a continuous hand-object interaction spans a cut, explicitly repeat the same hand grip, object position and support contact at the outgoing shot's end and the incoming shot's start. Use a brief stable beat only when it fits the requested pacing; continue the action without replaying steps or adding a long pause.
 
 ## Reference media
 

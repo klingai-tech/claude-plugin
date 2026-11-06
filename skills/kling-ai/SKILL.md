@@ -1,6 +1,6 @@
 ---
 name: kling-ai
-description: Coordinate Kling AI creation requests and manage reusable subjects (Elements), the motion library, uploads, credits, task status, and account switching through the remote MCP in Claude Code. Route image and video generation to their dedicated Skills.
+description: Handle Kling AI / 可灵 requests in Claude Code, including prompt-only planning, missing-asset next steps, generation preparation and approved image/video creation. Route creative work to the dedicated Skills; manage Elements, motion library, uploads, credits, existing tasks and account switching through the remote MCP.
 license: MIT
 ---
 
@@ -10,8 +10,9 @@ Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/
 
 ## Request routing
 
+- First determine the current deliverable: creative writing only, final generation settings awaiting approval, authorized submission, or an existing-task query. Creative writing ends with the requested prompt/plan. Final settings require live capability preparation; only an approved submission advances to generation.
 - For image creation or editing, follow [kling-ai-generate-image](../kling-ai-generate-image/SKILL.md): text-to-image, image-to-image, posters, product photos, portraits, covers, and variants.
-- For video generation, model selection, or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md): text-to-video, image-to-video, omni reference, keyframes, motion control, animation, and single-shot or multi-shot video. Discover relevant existing and new entry points before selecting a model, including for pure-text requests.
+- For video prompts, storyboards, missing-image next steps, generation, model selection or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md). For generation preparation, discover relevant entry points including pure-text omni; prompt-only work and requesting a missing asset do not need account queries.
 - Keep uploads, Elements, motion-library browsing, account operations, credit checks, and task status in this Skill. It also supplies the shared connection, billing, submission, and result rules for both generation Skills.
 - Motion library: browse with `motion_library_list`. Resolve the selected motion, then follow the video Skill for `motion_control` with a subject image and exactly one motion source.
 - Subject library / Elements: use `element_list`, `element_get`, `element_create`, `element_update`, or `element_delete` for the requested operation. Resolve real IDs before reuse.
@@ -33,7 +34,7 @@ Read [asset workflows](references/asset-workflows.md) for Elements, the motion l
 ## Billing and single submission
 
 - Image, video, and motion generation consume credits. Call `who_am_i` during preparation and select only models returned in the current account's `availableModels` for the chosen tool, with their declared arguments, inputs, and combination limits. Follow capability discovery for cross-tool selection and refresh stale definitions before proceeding. Do not infer model access from a tool's existence, membership tier, or static examples.
-- Show the final workflow, model, prompt summary, duration/resolution, aspect ratio, output count, and reference roles. Obtain explicit confirmation immediately before submission unless the current user message already authorizes immediate submission with those final settings. An upload, library operation, or credit check is not generation approval.
+- Show the final workflow, model, prompt summary, duration/resolution, aspect ratio, output count, and reference roles. Honor existing explicit authorization for the same unsubmitted intent and unchanged final settings; otherwise obtain confirmation before submission. An upload, library operation, or credit check is not generation approval.
 - Include any billing disclosure required by the live model/tool in those final settings. For omni reference that declares per-second billing with input video duration included, explain both facts before submission; output duration alone is not the total billed duration. Do not invent a rate or total credit estimate.
 - Submit at most once per approved intent. Never automatically retry or silently change models after a failure, timeout, ambiguous response, or rendering problem.
 - Do not save an Element automatically during ordinary generation. Element writes and deletion must follow the user's explicit request as described in [asset workflows](references/asset-workflows.md).
@@ -42,7 +43,7 @@ Read [asset workflows](references/asset-workflows.md) for Elements, the motion l
 
 1. Resolve reference roles, Elements, and motion sources; prepare local media before submission. Use the returned provider references exactly as the selected live schema requires.
 2. Confirm the final billable settings, then call the chosen generation tool once. A multi-shot plan remains one task unless the user approves separate tasks.
-3. Once `generationId` is known, use only `query_tasks` for follow-up. If the submission response is lost before an ID is known, stop and report that creation/billing state is unknown. The current MCP cannot list account history or recover a task by `taskTraceId`.
+3. Once `generationId` is known, use only `query_tasks` for follow-up. If the submission response is lost before an ID is known, stop and report that creation/billing state is unknown. `query_tasks` requires that ID; it cannot list recent tasks, inspect credits, or recover a task by `taskTraceId`. An unchanged balance or an absent history entry cannot prove that creation or billing failed. A new submission needs fresh authorization even if the user later reports no visible task.
 4. If Claude Code renders the generation MCP App, let that App own task refresh. Do not poll the same task from the model or add duplicate media, thumbnails, or download links.
 5. If no App renders, query at the provider-permitted interval until terminal, cancelled, or the turn cannot continue. Report the actual state and task number, with the tool's text fallback and at most one primary result link. Do not add Markdown image/video embeds or claim an unmounted App was displayed.
 6. For an explicit status request, query once and report the current state; do not start a long polling loop.
@@ -56,7 +57,7 @@ Apply only when the user has not specified another choice and the live model sup
 - Images: prefer `2k` for normal delivery and `4k` for commercial or crop-heavy work; use `1k` for drafts or speed. Never lower a higher live default.
 - Videos: prefer `1080p` for normal delivery and supported `4k` for commercial or post-production work; use `720p` for drafts, cost, speed, or model limitations.
 - Generate one result unless more are requested. Use about 5 seconds for one action, about 10 seconds for two connected beats, and longer only when supported and needed. Motion-control duration comes from the selected source and live constraints.
-- Infer `9:16`, `1:1`, or `16:9` from the destination; preserve first-frame composition for image-to-video unless the tool requires an explicit ratio.
+- When the user did not specify a ratio, infer it from the destination, or preserve the first frame for image-to-video unless the tool requires one. When the user did specify a ratio, pass that supported value even with a first frame.
 
 ## Failure behavior
 
