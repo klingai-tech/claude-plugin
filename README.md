@@ -94,6 +94,13 @@ Library queries and uploads do not authorize generation. They discover the
 live tool schemas at runtime and let the host render any MCP App resource
 returned by the remote server.
 
+Claude Code checks the connected account's current balance before each paid
+submission. If credits are insufficient, recharge the same account through
+the official Kling site, then ask Claude to continue in the same conversation.
+Claude checks any known task number first and rechecks the balance before a
+new submission. If a status refresh fails, Claude reports the task number
+and the last confirmed status when available.
+
 Generation sends the prompt, selected settings, and reference media URLs or
 Element IDs to Kling. Local reference files are uploaded only when needed
 through the upload flow returned by Kling. Generation and asset storage run

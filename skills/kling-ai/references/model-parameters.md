@@ -21,6 +21,7 @@ declares both values:
 
 ```json
 {
+  "model": "<canonical model ID from who_am_i>",
   "arguments": [
     {"name": "prompt", "value": "The creative description..."},
     {"name": "duration", "value": "7"},
