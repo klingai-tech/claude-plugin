@@ -55,6 +55,30 @@ test("V4 model names are allowed in the public package", (t) => {
   assert.equal(result.status, 0, result.output);
 });
 
+test("README and Skill offer the same five suggested prompts per language", () => {
+  const suggestions = (path) => {
+    const content = readFileSync(join(root, path), "utf8");
+    const section = content.split(/^#{2,3} Suggested prompts\n/m)[1].split(/^#{2,3} /m)[0];
+    return [...section.matchAll(/^- (.+)$/gm)].map(([, prompt]) => prompt);
+  };
+  const prompts = suggestions("README.md");
+  assert.deepEqual(prompts, suggestions("skills/kling-ai/references/prompt-examples.md"));
+  assert.equal(prompts.length, 10);
+  for (const [examples, expected] of [
+    [prompts.slice(0, 5), [
+      /series of three images in one request/, /Kling 4\.0 to generate/,
+      /Kling 4\.0 Flash.*20-second, 720p/, /motion library/, /reusable Element/,
+    ]],
+    [prompts.slice(5), [
+      /一次生成 3 张连续组图/, /可灵 4\.0 生成/,
+      /可灵 4\.0 Flash.*20 秒、720p/, /动作库/, /可复用主体/,
+    ]],
+  ]) {
+    expected.forEach((pattern, index) => assert.match(examples[index], pattern));
+  }
+  assert.doesNotMatch(prompts.join("\n"), /最新|latest|\bV4\b/i);
+});
+
 test("new linked Skill references are discovered automatically", (t) => {
   const directory = fixture(t);
   writeFileSync(join(directory, "skills/kling-ai/references/extra.md"), "# Extra reference\n");

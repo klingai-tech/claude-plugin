@@ -53,24 +53,42 @@ over. Keep only one active Kling connection.
 
 ## Use
 
-Ask Claude naturally, for example:
+Ask Claude in natural language. You can name the model you want to use.
 
-- Draw a red panda in a vintage spacesuit floating by a space station window,
-  Earth’s blue glow lighting its face, richly detailed, cinematic look.
-- Create a 5-second cinematic video: a mecha warrior crashes down from the sky,
-  shockwave blasting rocks and dust, camera rapidly pushing in with raw power.
-- Create a 15-second sneaker marketing short: open with a street hook, cut to
-  product close-ups and on-foot action within three seconds, end on a shoe
-  detail close-up.
-- Show my motion library with names and durations, without generating a video.
-- Save these product reference images as an Element named "Blue sneaker".
-- List my Elements, then show the details of "Blue sneaker".
-- Change only the description of "Blue sneaker", keeping its existing images.
-- Use this subject image with a motion from my library; show the final settings
-  before generating.
-- Use V4 for a cinematic video shot.
-- Combine these image and video references, preserving the source audio if the
-  selected model supports it.
+### Suggested prompts
+
+**English**
+
+- Use Kling to generate a series of three images in one request. Show the same red panda in a vintage spacesuit exiting a space station, drifting past a porthole, and turning to look at the blue Earth.
+- Use Kling 4.0 to generate a 20‑second cinematic video: a mech warrior slams down from height onto the ground, sending out a shockwave that instantly blasts apart rubble and dust, with the camera rapidly pushing in for a powerful impact.
+- Use Kling 4.0 Flash to turn my sneaker product photo into a 20-second, 720p video. Start from the photo, slowly orbit the shoe, and end on a close-up of the upper.
+- Use Kling AI to browse the motion library and preview saved motions; after I select one, apply it to my subject image with an available motion-control model to generate a video.
+- Use Kling AI to save the front and side views of my character as my first reusable Element, named “Xiaobai”, to help keep the character consistent in later creations.
+
+**简体中文**
+
+- 用可灵一次生成 3 张连续组图。让同一只身穿复古宇航服的小熊猫依次从空间站出舱、掠过舷窗、转身望向蓝色地球
+- 使用可灵 4.0 生成一段 20 秒电影感视频：机甲战士从高空重砸地面，冲击波瞬间震开碎石与尘雾，镜头快速推近，充满力量感
+- 使用可灵 4.0 Flash，把我提供的运动鞋商品图作为首帧，生成一段 20 秒、720p 的视频，镜头缓慢绕过鞋身，最后停在鞋面细节上
+- 使用可灵AI查看动作库，预览已保存的动作；选定后，用可用的动作控制模型将该动作应用到我提供的主体图片生成视频
+- 使用可灵AI将我提供的角色正面图和侧面图保存为第一个可复用主体，命名为“小白”，方便后续创作时保持角色一致
+
+### Image and video models
+
+For image generation and reference-guided editing, the plugin prefers the
+selected tool's available default model when it fits the request. A continuous
+image series requires a model that supports both series generation and the
+requested number of images in one task.
+
+| Video model | Generation modes | Output |
+| --- | --- | --- |
+| Kling 4.0 | Text-to-video, image-to-video with first, last, and intermediate keyframes, and Omni Reference with images, videos, audio, and Elements | 3–30 seconds at 720p, with 1080p available to eligible accounts |
+| Kling 4.0 Flash | Text-to-video, image-to-video from a single first-frame image, and Omni Reference with images, videos, and Elements | 3–20 seconds at 720p |
+
+Both Omni Reference models support smart shot splitting. Where the selected
+model exposes the audio controls, choose either synchronized sound generation
+or retention of the reference video's original sound. A separate audio
+reference requires a declared audio input, such as on Kling 4.0 Omni Reference.
 
 Element workflows cover creation, listing, details, updates, deletion, and
 reuse with compatible models. Motion-library management is read-only; the
@@ -79,14 +97,13 @@ a subject image and exactly one motion source. Available models, arguments,
 and resource limits always come from the live MCP tools.
 
 Video discovery includes `omni_ref_video` when available, even for text-only
-requests. Models are selected from the current account's `who_am_i` response;
-V4 is generally available, and the plugin recommends V4 for video generation. V4 Flash is preferred when speed or credit savings are requested.
-Model identifiers and parameters come from live discovery; a tool alone does
-not establish model access. Keyframes, image/video/Element/audio references, combined
-reference limits, and sound controls follow the selected model's live rules.
-When no compatible V4 model is returned, ordinary requests retain their
-existing compatible entry point and live default. An explicitly requested
-unavailable model is reported without silently substituting another model.
+requests. The plugin prefers a compatible Kling 4.0 Omni Reference model when
+the user leaves model selection open. Kling 4.0 Flash is preferred when it fits
+the request and the user prioritizes speed or credit savings. Model access,
+identifiers, output settings, and reference limits come from the current
+account's `who_am_i` response. If no model in the Kling 4.0 family fits, the
+plugin can use a compatible live default when the user allows it. An explicitly
+requested unavailable model is reported without silently substituting another model.
 
 The Skills require explicit approval of the final settings before a
 credit-consuming generation and submit each approved intent at most once.

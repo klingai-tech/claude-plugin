@@ -45,7 +45,7 @@ If the mismatch remains, report that the current connection did not return the r
 
 Follow [task status refresh](tool-workflows.md#task-status-refresh) for App and headless behavior. When the user reports a missing video, query the original video task once. If the query fails, report the task number and the last confirmed state.
 
-A rendering problem is not a generation failure. Preserve the tool result and use its text fallback and at most one primary result link. Do not register a local MCP server, embed duplicate media, or claim that an unmounted App was displayed. Report success only after terminal success with usable primary media; a cover image is not the video.
+For a rendering problem, preserve the tool result and follow the [core Skill's result rules](../SKILL.md#generation-and-results) for the text fallback and links. Do not register a local MCP server, embed duplicate media, or claim that an unmounted App was displayed.
 
 ## Submission fails or times out
 

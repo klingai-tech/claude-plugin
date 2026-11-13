@@ -19,8 +19,8 @@
 
 - [ ] Complete tool discovery includes pagination; video capability queries
       include `omni_ref_video` when present, even for pure-text requests.
-- [ ] V4 is generally available and recommended for video generation; user-facing
-      recommendations name V4 without calling it the latest model.
+- [ ] Model recommendations distinguish Kling 4.0 from Kling 4.0 Flash and name
+      the compatible variant returned for the current account.
 - [ ] Model selection is account-scoped; a new tool with only existing
       models does not force migration. User-specified unavailable models are
       not silently replaced, and discovery failures stop selection.

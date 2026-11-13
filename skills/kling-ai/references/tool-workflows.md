@@ -8,7 +8,7 @@
 4. Show the final mode, model, prompt summary, resolution, duration when applicable, aspect ratio, output count, and reference roles. Include live-required billing disclosures, including per-second billing and input video duration when applicable. Describe shot controls only as declared by the model, without inferring the actual number of cuts. Obtain explicit approval under the core Skill's billing rule.
 5. Validate the actual payload against the [MCP contract](mcp-contract.md). Immediately before submission, call `query_membership_and_credits` on the same connection. If no current balance is available, preserve the request and explain that the balance could not be confirmed. If the balance is zero or negative, the provider reports insufficient credits, or a live estimate for these settings exceeds the balance, follow [the resume workflow](#resuming-after-insufficient-credits). Submit only after the balance check permits it. A positive balance with no live estimate does not guarantee coverage.
 6. Call the selected generation tool once and preserve its returned `generationId` and status. Follow [task status refresh](#task-status-refresh) for the result.
-7. A successful submission means accepted, not finished. Confirm terminal success and primary media before reporting completion. Without a rendered App, return the text fallback, task number, and at most one primary media link.
+7. Apply the [core Skill's result rules](../SKILL.md#generation-and-results) to terminal results. Without a rendered App, include the task number, text fallback, and one primary media link per usable requested result.
 
 ## Resuming after insufficient credits
 

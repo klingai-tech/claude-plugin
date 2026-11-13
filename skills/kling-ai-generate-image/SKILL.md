@@ -28,10 +28,12 @@ For a request to continue after recharging, start with the [resume workflow](../
 5. Build one prompt covering subject, action, environment, composition, lighting, color, materials, camera language, protected facts, and necessary exclusions.
 6. Show the final mode, model, prompt summary, resolution, aspect ratio, output count, and reference roles. Obtain explicit approval under the core Skill's billing rule; honor an existing explicit authorization for the final settings.
 7. Verify the top-level `model`, required `arguments[]`, and required `inputs[]` against the [MCP contract](../kling-ai/references/mcp-contract.md). After approval and immediately before calling `text_to_image` or `image_to_image`, run the [balance check](../kling-ai/references/tool-workflows.md#generation) on the same connection. Submit once only when that check permits it, then preserve the task number and follow the core Skill's result workflow.
-8. When Claude Code renders the MCP App, do not add Markdown media or duplicate links. When no App is rendered, provide one primary image link.
+8. Follow the core Skill's result rules for single images and image series.
 
 ## Mode rules
 
+- When the user leaves model selection open, prefer the chosen tool's `defaultModel` if it is available and meets the request. If the user explicitly asks for that default, check its live capabilities and explain any unmet requirement before proposing another model.
+- For a continuous image series, select a model that explicitly supports series generation and the requested image count in one task. If the available default cannot do both, use a compatible model from the same tool when the user leaves model selection open. Set the count using the declared field and send a series switch only if the model declares one. Multiple independent outputs do not fulfill a continuous series. If no model fits, explain the limit before submission.
 - Element support follows the selected model's declared resource types and binding argument, not the entry point name.
 - Image-to-image may use one or more images with explicit roles. State the purpose of every image when multiple references are present.
 - Before using an Element subject, follow the core asset workflow, call `element_get`, and choose a model that explicitly supports the resource type and binding argument. Check individual and combined reference caps, and bind the exact ID with the model's declared prompt and structured syntax.
