@@ -7,7 +7,7 @@
   "author": {
     "name": "KLING AI Pte Ltd"
   },
-  "homepage": "https://klingai.com/app",
+  "homepage": "https://kling.ai/",
   "license": "MIT",
   "keywords": ["kling", "kling-ai", "claude-code", "image-generation", "video-generation", "mcp"],
   "skills": "./skills/",

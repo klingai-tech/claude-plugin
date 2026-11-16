@@ -42,7 +42,7 @@ Read [asset workflows](references/asset-workflows.md) for Elements, the motion l
 ## Generation and results
 
 1. Resolve reference roles, Elements, and motion sources; prepare local media before submission. Use the returned provider references exactly as the selected live schema requires.
-2. Confirm the final billable settings, then call the chosen generation tool once. A multi-shot plan remains one task unless the user approves separate tasks.
+2. Confirm the final billable settings, then follow the [balance check and single-submission workflow](references/tool-workflows.md#generation). A multi-shot plan remains one task unless the user approves separate tasks.
 3. Once `generationId` is known, use only `query_tasks` for follow-up. If the submission response is lost before an ID is known, stop and report that creation/billing state is unknown. `query_tasks` requires that ID; it cannot list recent tasks, inspect credits, or recover a task by `taskTraceId`. An unchanged balance or an absent history entry cannot prove that creation or billing failed. A new submission needs fresh authorization even if the user later reports no visible task.
 4. If Claude Code renders the generation MCP App, let that App own task refresh. Do not poll the same task from the model or add duplicate media, thumbnails, or download links.
 5. If no App renders, query at the provider-permitted interval until terminal, cancelled, or the turn cannot continue. Report the actual state and task number, with the tool's text fallback and at most one primary result link. Do not add Markdown image/video embeds or claim an unmounted App was displayed.

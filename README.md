@@ -16,29 +16,40 @@ This plugin contains:
 It does not bundle a local MCP server, MCP App, command, hook, agent, or API
 key. Generation runs on the remote Kling service.
 
-## Install for local review
+## Install in Claude Code
 
-Load the plugin directory for one Claude Code session:
-
-```bash
-claude --plugin-dir /absolute/path/to/kling-ai
-```
-
-Claude Code versions that support ZIP plugin directories can load the release
-archive directly:
+Claude Code 2.1.292 or later can install from this repository's marketplace in one command.
 
 ```bash
-claude --plugin-dir /absolute/path/to/kling-ai-claude-1.3.0-public.zip
+claude plugin install kling-ai --marketplace klingai-tech/claude-plugin
 ```
 
-For a persistent installation, distribute the plugin through a trusted Claude
-Code marketplace and install `kling-ai@<marketplace-name>`.
+You can also add the marketplace and install the plugin in two steps.
+
+```bash
+claude plugin marketplace add klingai-tech/claude-plugin
+claude plugin install kling-ai@klingai
+```
+
+### Install for local review
+
+Load a checkout for one Claude Code session.
+
+```bash
+git clone https://github.com/klingai-tech/claude-plugin.git
+cd claude-plugin
+claude --plugin-dir "$PWD"
+```
+
+If you have a plugin ZIP and your Claude Code version supports ZIP plugin
+directories, pass the archive path to `claude --plugin-dir`.
 
 ## Connect
 
-The bundled `.mcp.json` registers one HTTP server named `kling-ai`. Open
-`/mcp`, select `kling-ai`, and complete OAuth in the browser. The plugin never
-asks users to paste an API key into chat.
+After installation, start Claude Code, open `/mcp`, select `kling-ai`, and
+authorize your Global Kling account in the browser. The bundled `.mcp.json`
+registers this remote server. The plugin never asks users to paste an API key
+into chat.
 
 Claude Code manages OAuth discovery, client registration, and credentials.
 The plugin does not configure a custom OAuth client name or require users to
@@ -90,9 +101,16 @@ unavailable model is reported without silently substituting another model.
 
 The Skills require explicit approval of the final settings before a
 credit-consuming generation and submit each approved intent at most once.
+They check the connected account's balance immediately before submission.
+
 Library queries and uploads do not authorize generation. They discover the
 live tool schemas at runtime and let the host render any MCP App resource
 returned by the remote server.
+
+The [skills.sh Snyk audit](https://www.skills.sh/klingai-tech/claude-plugin/kling-ai/security/snyk)
+flags credit-consuming generation as W009. Balance lookup and approved
+generation run through Kling's OAuth MCP. Manage credit purchases directly on
+the [Global Kling website](https://kling.ai/).
 
 Generation sends the prompt, selected settings, and reference media URLs or
 Element IDs to Kling. Local reference files are uploaded only when needed

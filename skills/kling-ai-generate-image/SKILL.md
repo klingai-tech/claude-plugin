@@ -25,7 +25,7 @@ Read [prompt construction](references/prompt-construction.md) for reference imag
 4. Upload local images first and use only the live input names and returned URLs. Never silently degrade to text-to-image after an upload failure.
 5. Build one prompt covering subject, action, environment, composition, lighting, color, materials, camera language, protected facts, and necessary exclusions.
 6. Show the final mode, model, prompt summary, resolution, aspect ratio, output count, and reference roles. Obtain explicit approval under the core Skill's billing rule; honor an existing explicit authorization for the final settings.
-7. Call the image generation tool exactly once and preserve the task number. If its MCP App mounts, let that one App self-refresh and do not call `query_tasks` from the model. If no App mounts, follow the core Skill's headless polling fallback; never resubmit.
+7. Follow the [balance check and single-submission workflow](../kling-ai/references/tool-workflows.md#generation) and preserve the task number. If its MCP App mounts, let that one App self-refresh and do not call `query_tasks` from the model. If no App mounts, follow the core Skill's headless polling fallback; never resubmit.
 8. When Claude Code renders the MCP App, do not add Markdown media or duplicate links. When no App is rendered, provide one primary image link.
 
 ## Mode rules
