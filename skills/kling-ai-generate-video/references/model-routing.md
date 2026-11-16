@@ -5,14 +5,15 @@ First follow [capability discovery](../../kling-ai/references/capability-discove
 | Complete live discovery | Routing |
 | --- | --- |
 | No `omni_ref_video` | Use `text_to_video`, `image_to_video`, or `motion_control` according to intent and available model capabilities. A new model returned on these tools remains eligible. |
-| `omni_ref_video` exists | Query its models together with relevant existing video tools, even for pure-text requests. Prefer a compatible V4 model returned by the account, subject to the user's model and capability requirements. |
-| No compatible V4 model is returned | If the user permits other models, select a compatible live default. If the user requires V4, stop and report that no eligible pair was returned; do not offer an excluded model. |
+| `omni_ref_video` exists | Query its models together with relevant existing video tools, even for pure-text requests. When model choice is open, prefer a compatible Kling 4.0 Omni Reference pair returned by the account. |
+| No compatible model in the Kling 4.0 family is returned | Select a compatible live default if the user allows other models. If the user requires a specific model, stop and report the unmet requirement. |
 | Discovery failed or the requested model/capability is unavailable | Resolve the discovery failure or explain the current limitation. Do not silently use an older model, remove references, or generate to test availability. |
 
-Recommend V4 for video generation when the user has not specified a model and live discovery returns a compatible V4 model. Use V4 Flash when speed or credit savings are prioritized and its live capabilities fit. Say "Recommended: V4", without describing it as "the latest model". User-specified available models take precedence. Select quality/speed variants using actual descriptions, and use real billing information for budget choices. Do not raise resolution or output count merely because V4 is available.
+Match a named Kling 4.0 (V4) or Kling 4.0 Flash (V4 Flash) request to the full canonical name or declared alias in the current account response. The standard and Flash variants are distinct choices. When the user leaves the model open and prioritizes speed or credit savings, prefer a compatible Flash pair using live descriptions and billing information. Name the actual variant in the recommendation and keep the requested output settings.
 
 ## Intent and inputs
 
+- Use the selected pair's live capabilities to confirm these model differences. Kling 4.0 image-to-video can use first, last, and intermediate keyframes. Kling 4.0 Flash image-to-video uses a single first frame. Kling 4.0 Omni Reference can combine images, videos, audio, and Elements. Flash Omni Reference can combine images, videos, and Elements. A separate audio reference requires a declared audio input slot. Generated sound and original sound retention use output controls.
 - Text-only video can use `omni_ref_video` only if the chosen model explicitly permits no media inputs; otherwise use a compatible `text_to_video` model. The word "reference" in the tool name does not make attachments mandatory.
 - Image, video, Element, and audio references can use `omni_ref_video` only when the selected model supports each requested type and their combination. Do not treat its general tool description as every model's capability list.
 - Keyframes belong to whichever discovered tool/model declares the needed frame inputs. Do not hardcode them to one entry point, invent intermediate frames, or substitute identity references for frame control.
