@@ -1,0 +1,13 @@
+{
+  "name": "kling-ai",
+  "version": "1.3.0",
+  "description": "Official Kling AI Global Plugin for image and video generation from Gemini CLI.",
+  "mcpServers": {
+    "kling-ai-global-plugin": {
+      "url": "https://kling.ai/mcp/plugin",
+      "type": "http",
+      "authProviderType": "dynamic_discovery",
+      "description": "Official Kling AI Global MCP service. OAuth required; generation uses Global Kling credits."
+    }
+  }
+}
