@@ -66,11 +66,11 @@ test("README and Skill offer the same five suggested prompts per language", () =
   assert.equal(prompts.length, 10);
   for (const [examples, expected] of [
     [prompts.slice(0, 5), [
-      /series of three images in one request/, /Kling 4\.0 to generate/,
+      /Kling Image 4\.0.*three 8K images in one request/, /Kling 4\.0 to generate/,
       /Kling 4\.0 Flash.*20-second, 720p/, /motion library/, /reusable Element/,
     ]],
     [prompts.slice(5), [
-      /一次生成 3 张连续组图/, /可灵 4\.0 生成/,
+      /可灵图片 4\.0.*一次生成 3 张 8K 连续组图/, /可灵 4\.0 生成/,
       /可灵 4\.0 Flash.*20 秒、720p/, /动作库/, /可复用主体/,
     ]],
   ]) {

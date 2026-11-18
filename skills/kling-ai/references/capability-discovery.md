@@ -18,7 +18,7 @@ Host tool-name search must discover these candidates, not just the legacy entry 
 
 ## Selection and visibility
 
-- A user-specified available model takes precedence if it satisfies all required capabilities. Use [video model routing](../../kling-ai-generate-video/references/model-routing.md) for Kling 4.0 and Kling 4.0 Flash. For images, prefer the selected tool's available `defaultModel` when it meets the request and model choice is open.
+- A user-specified available model takes precedence if it satisfies all required capabilities. Use [video model routing](../../kling-ai-generate-video/references/model-routing.md) for Kling 4.0 and Kling 4.0 Flash. For images, follow the [image model selection rules](../../kling-ai-generate-image/SKILL.md#mode-rules).
 - In user-facing recommendations, identify the actual model variant using its returned name and explain how it fits the request. Recommend only models returned for the current account and avoid claims such as "the latest model" or "最新模型".
 - Required references, duration, sound, speed, and budget take precedence over version preferences. Do not silently drop requirements, increase output count, or lower specifications to make a model fit.
 - Reuse one successful discovery response during the same generation preparation. Refresh after reconnecting, switching account/endpoint, changed entitlements, a capability notification, or a rejected model/argument; query additional tools when the candidate set changes.
