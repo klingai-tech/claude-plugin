@@ -1,6 +1,72 @@
-# Kling AI for Claude Code
+# Kling AI for Claude · Global
 
-Build your own AI creative workflow with Kling MCP.
+Create and edit images, generate videos, reuse Elements, and check your Kling
+tasks and credits in Claude. This plugin uses your Global Kling account at
+`kling.ai`. If your account is on `klingai.com`, use the
+[China plugin](https://github.com/klingai-tech/claude-plugin-cn). Accounts,
+credits, and tasks are separate between regions.
+
+[Official Kling MCP and CLI guide](https://kling.ai/app/mcp/guide)
+
+## Quick start
+
+Choose the instructions for the Claude interface you use.
+
+### Claude web and desktop
+
+1. Open the [Kling AI listing in Claude](https://claude.ai/customize/plugins/id/d9941d90-877f-4972-ab4d-00ffe5b57c4e%40anthropic-plugin-directory) and select **Add to Claude**.
+2. Select **Connect** under the plugin's **Connectors**, then sign in with your Global Kling account to authorize it in your browser.
+3. Start a new chat and [check your connection](#try-it). If the Kling connector is off in that chat, turn it on from the **+** menu.
+
+For marketplace installation, open **Plugins** in the sidebar (or
+**Customize → Plugins**), choose **Add → Add marketplace**, add
+`https://github.com/klingai-tech/claude-plugin`, and install **Kling AI**.
+
+### Claude Code
+
+With Claude Code installed, run these commands in your terminal.
+
+```bash
+claude plugin marketplace add klingai-tech/claude-plugin
+claude plugin install kling-ai@klingai
+claude
+```
+
+In Claude Code, enter `/mcp`, select the plugin's `kling-ai` server, and
+choose **Authenticate**. Sign in with your Global Kling account in the browser,
+then return to Claude Code and check that the server is connected.
+
+On Claude Code 2.1.292 or later, `claude plugin install kling-ai --marketplace klingai-tech/claude-plugin`
+adds the marketplace and installs the plugin in one command.
+
+### Try it
+
+- **Check the connection** — “Show my Kling account, available models, and credit balance.”
+- **Generate an image** — “Use Kling to create a portrait of a Shiba Inu sitting by a café window in afternoon light.”
+- **Animate an image** — Attach an image and ask “Use Kling to turn this image into a 5-second video with a slow camera push-in.”
+
+The connection check uses no credits. When you generate with the plugin,
+review the model, settings, and references in chat and confirm to submit the
+task. Save the task ID and ask “Is my Kling task ready? Give me the result
+link.” in the same chat. Result links expire after 24 hours.
+
+### Connection help
+
+- **`kling-ai` is missing in Claude Code.** Run `/reload-plugins` or restart Claude Code, then open `/mcp` again.
+- **Authorization expired or you selected the wrong account.** Disconnect the current authorization in the MCP or connector panel and sign in again. Before switching regions, check any pending tasks in the original region, disconnect that connection, and enable the plugin for the new region.
+- **Your usable balance is too low.** Kling MCP uses paid credits in your Personal workspace. Top up the same Kling account and ask Claude to continue in the same chat.
+
+### Connect MCP manually or use the CLI
+
+Use one Kling integration per assistant. The plugin already registers
+`https://kling.ai/mcp/plugin` for you.
+
+- **Manual MCP** — In Claude web or desktop, open **Plugins** (or **Customize → Connectors**), add `https://kling.ai/mcp` as a custom connector, then select **Connect** and authorize your Global Kling account.
+- **Standalone CLI** — To use Kling from the terminal, run `npm i -g @klingai/cli-global --registry=https://registry.npmjs.org`, then `kling login` and `kling --help`.
+
+[Official instructions for other MCP clients and CLI commands](https://kling.ai/app/mcp/guide)
+
+## What the plugin includes
 
 This plugin contains:
 
@@ -16,22 +82,7 @@ This plugin contains:
 It does not bundle a local MCP server, MCP App, command, hook, agent, or API
 key. Generation runs on the remote Kling service.
 
-## Install in Claude Code
-
-Claude Code 2.1.292 or later can install from this repository's marketplace in one command.
-
-```bash
-claude plugin install kling-ai --marketplace klingai-tech/claude-plugin
-```
-
-You can also add the marketplace and install the plugin in two steps.
-
-```bash
-claude plugin marketplace add klingai-tech/claude-plugin
-claude plugin install kling-ai@klingai
-```
-
-### Install for local review
+## Install for local review
 
 Load a checkout for one Claude Code session.
 
@@ -43,24 +94,6 @@ claude --plugin-dir "$PWD"
 
 If you have a plugin ZIP and your Claude Code version supports ZIP plugin
 directories, pass the archive path to `claude --plugin-dir`.
-
-## Connect
-
-After installation, start Claude Code, open `/mcp`, select `kling-ai`, and
-authorize your Global Kling account in the browser. The bundled `.mcp.json`
-registers this remote server. The plugin never asks users to paste an API key
-into chat.
-
-Claude Code manages OAuth discovery, client registration, and credentials.
-The plugin does not configure a custom OAuth client name or require users to
-override registration metadata. If authorization fails, use the actual error
-from Claude Code to diagnose the connection.
-
-When upgrading from the old `https://klingai.com/mcp` connection, finish any
-outstanding task checks in the original region, disconnect the old OAuth
-session, update/reload the plugin, and authorize your Global account through
-`/mcp`. Regional accounts, credits, and task IDs must not be assumed to carry
-over. Keep only one active Kling connection.
 
 ## Use
 
@@ -178,7 +211,5 @@ credentials, or generated media.
 
 Claude supports plugins in chat, Claude Desktop, and Cowork, with component
 support varying by surface; see [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
-This package's instructions target Claude Code. Its authentication flow,
-uploads, and result presentation have not been validated on the other
-surfaces. Do not assume Claude Code commands such as `/mcp` apply there; use
-the target host's native plugin and connector controls.
+Use the native plugin and connector controls on those surfaces. This
+repository's validation covers the Claude Code package.
