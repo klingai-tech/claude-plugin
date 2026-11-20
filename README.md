@@ -44,6 +44,7 @@ adds the marketplace and installs the plugin in one command.
 - **Check the connection** — “Show my Kling account, available models, and credit balance.”
 - **Generate an image** — “Use Kling to create a portrait of a Shiba Inu sitting by a café window in afternoon light.”
 - **Animate an image** — Attach an image and ask “Use Kling to turn this image into a 5-second video with a slow camera push-in.”
+- **Generate an HDR video** — “Use Kling 4.0 to generate a 5-second, 1080p HDR video. Neon signs reflect off a rain-soaked street as the camera slowly moves forward.”
 
 The connection check uses no credits. When you generate with the plugin,
 review the model, settings, and references in chat and confirm to submit the
@@ -131,8 +132,11 @@ before any generation.
 
 | Video model | Generation modes | Output |
 | --- | --- | --- |
-| Kling 4.0 | Text-to-video, image-to-video with first, last, and intermediate keyframes, and Omni Reference with images, videos, audio, and Elements | 3–30 seconds at 720p, with 1080p available to eligible accounts |
+| Kling 4.0 | Text-to-video, image-to-video with first, last, and intermediate keyframes, and Omni Reference with images, videos, audio, and Elements | 3–30 seconds at 720p, with 1080p and 4K for eligible accounts and optional HDR where supported |
 | Kling 4.0 Flash | Text-to-video, image-to-video from a single first-frame image, and Omni Reference with images, videos, and Elements | 3–20 seconds at 720p |
+
+For HDR output, the plugin checks whether the connected account's live MCP
+supports HDR at 1080p or 4K on the selected generation mode.
 
 Both Omni Reference models support smart shot splitting. Where the selected
 model exposes the audio controls, choose either synchronized sound generation

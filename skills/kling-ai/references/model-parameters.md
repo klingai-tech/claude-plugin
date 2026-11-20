@@ -36,6 +36,13 @@ request as its text. Keep reference inputs in the outer schema's input slots.
 Before sending, compare every explicit requirement with the actual serialized
 value or supported input; build the result summary from those values afterward.
 
+### HDR video output
+
+- For Kling 4.0 HDR output, send `{"name": "hdr", "value": "hdr"}` in `arguments` when the live pair declares that value. Explicitly send a compatible `resolution` of `1080p` or `4k`, using the live enum. If the user leaves resolution open, prefer 1080p when supported unless the pair has a higher compatible default.
+- When dynamic range is unspecified, preserve the live default. Where declared, `hdr=none` leaves HDR off and can fulfill an explicit SDR request. Treat lighting and contrast cues in the prompt as visual style.
+- If the user requests HDR at 720p or the requested pair cannot deliver HDR at the requested resolution, explain the conflict and obtain approval for compatible settings before submission.
+- Check the live input constraints independently of output mode. If the selected Kling 4.0 omni reference pair requires SDR for a direct `video_*` input and the required reference is HDR, ask for an SDR version.
+
 ## References and Elements
 
 Apply only when using actual/required reference inputs or Elements. Read [asset workflows](asset-workflows.md) for lookup and upload operations.

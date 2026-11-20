@@ -19,6 +19,7 @@ Match a named Kling 4.0 (V4) or Kling 4.0 Flash (V4 Flash) request to the full c
 - Keyframes belong to whichever discovered tool/model declares the needed frame inputs. Do not hardcode them to one entry point, invent intermediate frames, or substitute identity references for frame control.
 - Motion transfer must use a model that explicitly supports that intent and all required inputs. Existing `motion_control` requests keep the subject image and exactly one motion source.
 - Do not move an omni model to `image_to_video` or `text_to_video`; tool/model pairs and their parameter sets are inseparable.
+- Required HDR is an eligibility condition. For text-to-video, image-to-video, or omni reference, keep only live pairs that declare HDR at a compatible resolution and support the requested input roles. Apply the [HDR request rules](../../kling-ai/references/model-parameters.md#hdr-video-output) after selection.
 - Required silence is an eligibility condition across these entry points. Exclude a pair without a declared off value or silent-output guarantee before ranking by model preference. An entry named text-to-video is not inherently silent; a compatible text-only omni entry remains eligible without attachments.
 
 After selection, apply [model parameters](../../kling-ai/references/model-parameters.md), including conditional reference caps, Elements, and audio exclusivity. One multi-shot plan remains one task unless separate tasks were explicitly approved. The core Skill's billing, single-submission, and result rules apply to omni reference too.
