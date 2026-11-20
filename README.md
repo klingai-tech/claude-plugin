@@ -62,7 +62,7 @@ link.” in the same chat. Result links expire after 24 hours.
 Use one Kling integration per assistant. The plugin already registers
 `https://kling.ai/mcp/plugin` for you.
 
-- **Manual MCP** — In Claude web or desktop, open **Plugins** (or **Customize → Connectors**), add `https://kling.ai/mcp` as a custom connector, then select **Connect** and authorize your Global Kling account.
+- **Manual MCP** — In Claude web or desktop, open **Plugins** (or **Customize → Connectors**), add `https://kling.ai/mcp/plugin` as a custom connector, then select **Connect** and authorize your Global Kling account.
 - **Standalone CLI** — To use Kling from the terminal, run `npm i -g @klingai/cli-global --registry=https://registry.npmjs.org`, then `kling login` and `kling --help`.
 
 [Official instructions for other MCP clients and CLI commands](https://kling.ai/app/mcp/guide)
