@@ -57,6 +57,16 @@ link.” in the same chat. Result links expire after 24 hours.
 - **Authorization expired or you selected the wrong account.** Disconnect the current authorization in the MCP or connector panel and sign in again. Before switching regions, check any pending tasks in the original region, disconnect that connection, and enable the plugin for the new region.
 - **Your usable balance is too low.** Kling MCP uses paid credits in your Personal workspace. Top up the same Kling account and ask Claude to continue in the same chat.
 
+### Gemini CLI
+
+This repository also provides a Gemini CLI extension for Global. Install it from the official repository:
+
+```bash
+gemini extensions install https://github.com/klingai-tech/claude-plugin
+```
+
+Start Gemini CLI, then run `/mcp auth kling-ai-global-plugin` to authorize your Global account. Run `/mcp` to check the connection. Generation uses credits from the Global account. For China accounts, install the [China extension](https://github.com/klingai-tech/claude-plugin-cn).
+
 ### Connect MCP manually or use the CLI
 
 Use one Kling integration per assistant. The plugin already registers
