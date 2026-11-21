@@ -41,8 +41,8 @@ adds the marketplace and installs the plugin in one command.
 
 ### GitHub Copilot CLI and VS Code
 
-- **GitHub Copilot CLI** — Install directly from this repository with `copilot plugin install klingai-tech/claude-plugin`.
-- **VS Code with Copilot** — [Install the Global plugin in VS Code](https://vscode.dev/redirect?url=vscode%3A%2F%2Fchat-plugin%2Finstall%3Fsource%3Dklingai-tech%252Fclaude-plugin%26plugin%3Dkling-ai-global-plugin). VS Code asks you to confirm before installing. The first connection uses OAuth with your Global Kling account.
+- **GitHub Copilot CLI** — Add this official marketplace with `copilot plugin marketplace add klingai-tech/claude-plugin`, then install with `copilot plugin install kling-ai@klingai`.
+- **VS Code with Copilot** — [Install the Global plugin in VS Code](https://vscode.dev/redirect?url=vscode%3A%2F%2Fchat-plugin%2Finstall%3Fsource%3Dklingai-tech%252Fclaude-plugin%26plugin%3Dkling-ai). VS Code asks you to confirm before installing. The first connection uses OAuth with your Global Kling account.
 - If the link does not open, run **Chat: Install Plugin from Source** in VS Code and enter `https://github.com/klingai-tech/claude-plugin`.
 
 ### Try it
