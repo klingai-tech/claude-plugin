@@ -83,6 +83,12 @@ Use one Kling integration per assistant. The plugin already registers
 
 [Official instructions for other MCP clients and CLI commands](https://kling.ai/app/mcp/guide)
 
+### Connect in VS Code and GitHub Copilot
+
+[Add the official Global MCP to VS Code](https://vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522kling-ai-global%2522%252C%2522type%2522%253A%2522http%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fkling.ai%252Fmcp%252Fplugin%2522%257D)
+
+The link opens a configuration preview. Review the endpoint, install it, and complete OAuth with your Global Kling account. Image and video generation uses Global Kling credits.
+
 ## What the plugin includes
 
 This plugin contains:
