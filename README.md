@@ -217,3 +217,22 @@ Claude supports plugins in chat, Claude Desktop, and Cowork, with component
 support varying by surface; see [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
 Use the native plugin and connector controls on those surfaces. This
 repository's validation covers the Claude Code package.
+
+## Install in Kiro
+
+[![Add to Kiro](https://kiro.dev/images/add-to-kiro.svg)](https://kiro.dev/launch/mcp/add?name=Kling+AI+Global&config=%7B%22url%22%3A%22https%3A%2F%2Fkling.ai%2Fmcp%2Fplugin%22%2C%22disabled%22%3Afalse%2C%22autoApprove%22%3A%5B%5D%7D)
+
+This one-click link adds the Global remote MCP server. Kiro handles OAuth
+for this endpoint. Image and video generation consumes credits in the signed-in
+Global Kling account.
+
+To install the full Agent Plugin with its bundled Skills, open **Powers** →
+**Add Custom Power** → **Import power from GitHub** and enter
+`https://github.com/klingai-tech/claude-plugin`. Kiro reads the root
+`plugin.json` and `mcp.json`; see the [Kiro install guide](https://kiro.dev/docs/powers/installation/).
+
+## Privacy and support
+
+- [Privacy policy](https://kling.ai/docs/privacy-policy)
+- [User service agreement and support contacts](https://kling.ai/docs/user-policy)
+- [Support email](mailto:support@kling.ai)
