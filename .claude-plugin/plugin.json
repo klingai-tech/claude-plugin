@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "kling-ai",
+  "displayName": "Kling AI",
+  "version": "1.4.0",
+  "description": "Create and edit images, generate videos with Kling 4.0 or Kling 4.0 Flash when available, apply motion control, reuse Elements, and track tasks with Kling AI in Claude.",
+  "author": {
+    "name": "KLING AI Pte Ltd"
+  },
+  "homepage": "https://kling.ai/",
+  "license": "MIT",
+  "keywords": ["kling", "kling-ai", "claude-code", "image-generation", "video-generation", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
