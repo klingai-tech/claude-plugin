@@ -10,6 +10,10 @@ credits, and tasks are separate between regions.
 
 [Official Kling MCP and CLI guide](https://kling.ai/app/mcp/guide)
 
+For client-specific MCP setup steps across Claude, ChatGPT, Codex, Cursor, VS Code, Gemini CLI and other clients, see the [mcp.tc community listing](https://mcp.tc/i/kling-ai).
+
+CodeBuddy CLI users can connect the Global endpoint with `codebuddy mcp add --scope user --transport http kling-ai https://kling.ai/mcp/plugin`, then complete the OAuth authorization when prompted. See the [CodeBuddy MCP guide](https://www.codebuddy.ai/docs/cli/mcp).
+
 ## Quick start
 
 Choose the instructions for the Claude interface you use.
