@@ -10,6 +10,8 @@ credits, and tasks are separate between regions.
 
 [Official Kling MCP and CLI guide](https://kling.ai/app/mcp/guide)
 
+For client-specific MCP setup steps across Claude, ChatGPT, Codex, Cursor, VS Code, Gemini CLI and other clients, see the [mcp.tc community listing](https://mcp.tc/i/kling-ai).
+
 ## Quick start
 
 Choose the instructions for the Claude interface you use.
