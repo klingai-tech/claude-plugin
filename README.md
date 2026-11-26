@@ -10,6 +10,8 @@ credits, and tasks are separate between regions.
 
 [Official Kling MCP and CLI guide](https://kling.ai/app/mcp/guide)
 
+[![Kling AI Global Plugin on Glama](https://glama.ai/mcp/connectors/io.github.klingai-dev/kling-ai/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.klingai-dev/kling-ai)
+
 ## Quick start
 
 Choose the instructions for the Claude interface you use.
