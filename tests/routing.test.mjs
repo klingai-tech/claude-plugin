@@ -13,6 +13,15 @@ const event = (name, input) => ({ type: "assistant", message: { content: [{ type
 const roots = { skillRoots: ["/fixture/plugin/skills"], cwd: "/fixture" };
 const handoff = event("mcp__routing__skill_catalog", entry.args);
 
+test("entry tells new text-only objectives to list before choosing an ID", () => {
+  const entryGuide = readFileSync(new URL("../skills/kling-ai/SKILL.md", import.meta.url), "utf8");
+  const routing = entryGuide.split("## Request routing")[1].split("## ")[0];
+  const listing = routing.indexOf("call it without `id` or `path` before matching or drafting");
+  assert.ok(routing.indexOf("including a text-only prompt, storyboard, or advertising plan") < listing);
+  assert.match(routing, /Only an exact ID supplied by the user permits a first call with `id`/);
+  assert.ok(listing >= 0);
+});
+
 test("creative routing requires complete declarations before declaring the catalog absent", () => {
   const entryGuide = readFileSync(new URL("../skills/kling-ai/SKILL.md", import.meta.url), "utf8");
   assert.match(entryGuide, /complete tool declarations, including all pagination/);
