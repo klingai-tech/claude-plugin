@@ -149,6 +149,11 @@ for (const c of cases.filter(c => selected === "all" || selectedCases.includes(c
     const answer = hostName === "claude" ? result.result : host.events.filter(e => e.item?.type === "agent_message").map(e => e.item.text).join("\n");
     assert.ok(typeof answer === "string" && answer.trim(), "Host returned no text answer");
     const paginationUnavailable = c.id === "catalog-on-page-two" && !declarations.some(page => page.hasCatalog && !page.nextCursor);
+    if (c.workflow && !c.direct && !c.active && !paginationUnavailable) {
+      const listed = calls.findIndex(call => call.name === "skill_catalog" && !call.args.id && !call.args.path && call.ok);
+      const loaded = calls.findIndex(call => call.name === "skill_catalog" && call.args.id === c.workflow && !call.args.path);
+      assert.ok(listed >= 0 && loaded > listed, "A new objective matched by intent before listing the live workflow catalog");
+    }
     if (c.discoveryLimited || paginationUnavailable) assert.match(answer, /完整|分页|截断|complet|paginat|truncat/i, "Discovery-limited routing did not report the limitation");
     if (c.expectedText) assert.ok(answer.includes(c.expectedText), "Direct text execution changed the original prompt");
     validate(paginationUnavailable ? { ...c, discoveryLimited: true } : c, calls, events, { cwd: workspace, skillRoots: [join(plugin, "skills"), join(workspace, ".agents/skills")], skillNames: readdirSync(join(plugin, "skills")) });
