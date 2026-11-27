@@ -49,6 +49,7 @@ const cases = [
   { id: "ordinary", prompt: `用可灵按提示词生成5秒视频：一朵云缓慢飘过蓝天。${approved}`, ordinary: true },
   { id: "catalog-absent", prompt: `用可灵按提示词生成5秒视频：一朵云缓慢飘过蓝天。${approved}`, absent: true },
   { id: "prompt-only", prompt: `只写一段夜市短剧提示词：${prompt} 不生成。`, workflow: "fixture-cinema-27", noGeneration: true },
+  { id: "catalog-on-page-two", prompt: `只写一段夜市短剧提示词：${prompt} 不生成。`, workflow: "fixture-cinema-27", noGeneration: true },
   { id: "unmatched-text", prompt: "只写一段白云飘过蓝天的视频提示词，不生成。", ordinary: true, noGeneration: true },
   { id: "absent-text", prompt: "只写一段白云飘过蓝天的视频提示词，不生成。", absent: true, noGeneration: true },
   { id: "workflow-text", prompt: `使用官方工作流 fixture-cinema-27，只写夜市短剧提示词：${prompt} 不生成。`, workflow: "fixture-cinema-27", direct: true, noGeneration: true },
@@ -66,6 +67,7 @@ const cases = [
   { id: "resume-bundled", prompt: `继续刚才的任务，用原提示词生成视频。${approved}`, context: bundledContext, active: true, activeRoute: "bundled" },
   { id: "active-file-failure", prompt: `继续之前的短剧，先恢复缺失的必读文件。${approved}`, context: partialContext, active: true, workflow: "fixture-cinema-27", failure: true },
   { id: "version-mismatch", prompt: `制作一集夜市短剧：${prompt}${approved}`, workflow: "fixture-cinema-27", versionMismatch: true },
+  { id: "file-version-mismatch", prompt: `制作一集夜市短剧：${prompt}${approved}`, workflow: "fixture-cinema-27", versionMismatch: true, fileVersionMismatch: true },
   { id: "status", prompt: "只查原任务 fixture-existing 的当前状态，不生成。", status: true, noGeneration: true },
   { id: "entry-failure", prompt: `用工作流 fixture-cinema-27 生成短剧：${prompt}${approved}`, failure: true, direct: true },
   { id: "missing-id", prompt: `用工作流 fixture-missing-99 生成短剧：${prompt}${approved}`, failure: true, direct: true },
@@ -105,6 +107,7 @@ function runHost(c, workspace, plugin, trace) {
   });
 }
 let failures = 0;
+let hostLimitations = 0;
 const summary = [];
 for (const c of cases.filter(c => selected === "all" || selectedCases.includes(c.id))) {
   console.log(`RUN ${c.id}`);
@@ -130,17 +133,28 @@ for (const c of cases.filter(c => selected === "all" || selectedCases.includes(c
     assert.equal(host.code, 0, `${hostName} exited ${host.code} (${host.signal ?? "no signal"}); see host output`);
     const result = host.events.findLast(event => event.type === (hostName === "claude" ? "result" : "turn.completed"));
     assert.ok(result && !result.is_error, `Host did not finish successfully: ${result?.subtype ?? "missing result"}`);
-    const calls = readFileSync(trace, "utf8").trim().split("\n").filter(Boolean).map(line => JSON.parse(line));
+    const records = readFileSync(trace, "utf8").trim().split("\n").filter(Boolean).map(line => JSON.parse(line));
+    const declarations = records.filter(record => record.method === "tools/list");
+    const calls = records.filter(record => record.name);
+    if (c.id === "catalog-on-page-two") {
+      const first = records.findIndex(record => record.method === "tools/list" && !record.hasCatalog && record.nextCursor);
+      const last = records.findIndex(record => record.method === "tools/list" && record.hasCatalog && !record.nextCursor);
+      assert.ok(first >= 0, "The host did not request the first tool page");
+      if (last >= 0) assert.ok(last > first && last < records.findIndex(record => record.name === "skill_catalog"), "The host used the catalog before finishing pagination");
+    }
+    if (c.absent) assert.ok(declarations.some(page => !page.hasCatalog && !page.cursor && !page.nextCursor), "No complete declaration observed for catalog absence");
     if (hostName === "claude") assert.ok(host.events.find(e => e.type === "system" && e.subtype === "init")?.mcp_servers.every(server => server.name === "routing"), "Unexpected MCP connection in fixture host");
     else assert.ok(host.events.filter(e => e.item?.type === "mcp_tool_call").every(e => e.item.server === "routing"), "Unexpected MCP call outside the fixture");
     const events = hostName === "claude" ? host.events : host.events.filter(e => e.type === "item.completed").map(e => ({ type: "assistant", message: { content: e.item.type === "mcp_tool_call" ? [{ type: "tool_use", name: `mcp__${e.item.server}__${e.item.tool}`, input: e.item.arguments }] : e.item.type === "command_execution" ? [{ type: "tool_use", name: "Shell", input: { command: e.item.command } }] : [] } }));
     const answer = hostName === "claude" ? result.result : host.events.filter(e => e.item?.type === "agent_message").map(e => e.item.text).join("\n");
     assert.ok(typeof answer === "string" && answer.trim(), "Host returned no text answer");
-    if (c.discoveryLimited) assert.match(answer, /完整|受限|截断|无法|complete|truncat|unavailable|limit/i, "Discovery-limited routing did not report the limitation");
+    const paginationUnavailable = c.id === "catalog-on-page-two" && !declarations.some(page => page.hasCatalog && !page.nextCursor);
+    if (c.discoveryLimited || paginationUnavailable) assert.match(answer, /完整|分页|截断|complet|paginat|truncat/i, "Discovery-limited routing did not report the limitation");
     if (c.expectedText) assert.ok(answer.includes(c.expectedText), "Direct text execution changed the original prompt");
-    validate(c, calls, events, { cwd: workspace, skillRoots: [join(plugin, "skills"), join(workspace, ".agents/skills")], skillNames: readdirSync(join(plugin, "skills")) });
-    summary.push({ case: c.id, passed: true, calls: calls.map(call => ({ name: call.name, id: call.args.id, path: call.args.path, ok: call.ok })) });
-    console.log(`PASS ${c.id}`);
+    validate(paginationUnavailable ? { ...c, discoveryLimited: true } : c, calls, events, { cwd: workspace, skillRoots: [join(plugin, "skills"), join(workspace, ".agents/skills")], skillNames: readdirSync(join(plugin, "skills")) });
+    if (paginationUnavailable) hostLimitations++;
+    summary.push({ case: c.id, passed: !paginationUnavailable, ...(paginationUnavailable ? { hostLimitation: "tool pagination unavailable; routing paused" } : {}), declarations, calls: calls.map(call => ({ name: call.name, id: call.args.id, path: call.args.path, ok: call.ok })) });
+    console.log(paginationUnavailable ? `HOST LIMIT ${c.id}: routing paused safely` : `PASS ${c.id}`);
   } catch (error) {
     failures++;
     summary.push({ case: c.id, passed: false, error: error.message });
@@ -148,5 +162,5 @@ for (const c of cases.filter(c => selected === "all" || selectedCases.includes(c
   }
   writeFileSync(join(output, "summary.json"), JSON.stringify({ host: hostName, skillRoot, entry, summary }, null, 2) + "\n");
 }
-console.log(`${summary.length - failures}/${summary.length} passed; evidence: ${output}`);
-process.exitCode = failures ? 1 : 0;
+console.log(`${summary.length - failures - hostLimitations}/${summary.length} passed; ${hostLimitations} host limitations; evidence: ${output}`);
+process.exitCode = failures || hostLimitations ? 1 : 0;

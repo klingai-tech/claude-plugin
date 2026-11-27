@@ -30,7 +30,11 @@ export function validate(c, calls, events, {
     if (generations.length) assert.ok(calls.indexOf(generations[0]) > listed, "Generation preceded unmatched catalog lookup");
     assert.ok(catalog.every(call => !call.args.id), "Unmatched request loaded a workflow");
   } else if (c.failure) assert.ok(catalog.some(call => !call.ok), "Expected catalog/read failure was not exercised");
-  else if (c.versionMismatch) assert.ok(catalog.some(call => call.args.id === c.workflow && !call.args.path && call.ok), "Expected mismatched package entry was not read");
+  else if (c.versionMismatch) {
+    const expectedPath = c.fileVersionMismatch ? "references/kling-ai/SKILL.md" : undefined;
+    assert.ok(catalog.some(call => call.args.id === c.workflow && call.args.path === expectedPath && call.ok), "Expected mismatched package content was not read");
+    assert.ok(calls.every(call => call.name === "skill_catalog"), "Mismatched package triggered dependent provider calls");
+  }
   else {
     const loaded = calls.findIndex(call => call.name === "skill_catalog" && call.args.id === c.workflow && !call.args.path && call.ok);
     const reference = calls.findIndex(call => call.name === "skill_catalog" && call.args.id === c.workflow && call.args.path === "references/kling-ai/SKILL.md" && call.ok);

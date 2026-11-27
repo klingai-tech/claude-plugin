@@ -32,13 +32,18 @@ function call(name, args) {
     if (scenario === "list-failure" && !args.id) throw new Error("Fixture catalog unavailable");
     if (!args.id) return { workflows: ["ordinary", "unmatched-text"].includes(scenario) ? [] : workflows };
     if (scenario === "entry-failure") throw new Error("Fixture entry unavailable");
-    if (!workflows.some(w => w.id === args.id)) throw new Error("Unknown fixture workflow ID");
+    const selected = workflows.find(w => w.id === args.id);
+    if (!selected) throw new Error("Unknown fixture workflow ID");
+    const version = (!args.path && scenario === "version-mismatch") ||
+      (args.path && scenario === "file-version-mismatch") ? "2.0.0" : selected.version;
+    const workflow = { ...selected, version };
+    const files = ["SKILL.md", "references/kling-ai/SKILL.md"];
     if (args.path) {
       if (["file-failure", "active-file-failure"].includes(scenario)) throw new Error("Fixture required file unavailable");
       if (args.path !== "references/kling-ai/SKILL.md") throw new Error("Unknown fixture package path");
-      return { id: args.id, path: args.path, content: executionGuide };
+      return { workflow, path: args.path, content: executionGuide, files };
     }
-    return { id: args.id, version: scenario === "version-mismatch" ? "2.0.0" : "1.0.0", content: packageGuide, files: ["SKILL.md", "references/kling-ai/SKILL.md"] };
+    return { workflow, path: "SKILL.md", content: packageGuide, files };
   }
   if (name === "who_am_i") return { availableModels: Object.fromEntries(generations.map(tool => [tool, { defaultModel: "fixture-video", models: [{ model: "fixture-video", name: "Fixture video", arguments: [{ name: "prompt", required: true }, { name: "duration", required: true, enum: ["5"] }, { name: "resolution", required: true, enum: ["720p", "1080p"] }], inputs: [] }] }])) };
   if (name === "query_membership_and_credits") return { credits: 100, availableCredits: 100 };
@@ -52,7 +57,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href &
   if (request.id === undefined) return;
   let result;
   if (request.method === "initialize") result = { protocolVersion: request.params.protocolVersion, capabilities: { tools: {} }, serverInfo: { name: "routing-fixture", version: "1.0.0" } };
-  else if (request.method === "tools/list") result = { tools: ["catalog-absent", "absent-text"].includes(scenario) || Object.hasOwn(discoveryLimits, scenario) ? tools.filter(tool => tool.name !== "skill_catalog") : tools };
+  else if (request.method === "tools/list") {
+    const paged = scenario === "catalog-on-page-two";
+    const cursor = request.params?.cursor;
+    const hideCatalog = paged || ["catalog-absent", "absent-text"].includes(scenario) || Object.hasOwn(discoveryLimits, scenario);
+    result = paged && cursor === "catalog-page"
+      ? { tools: tools.filter(tool => tool.name === "skill_catalog") }
+      : { tools: hideCatalog ? tools.filter(tool => tool.name !== "skill_catalog") : tools, ...(paged ? { nextCursor: "catalog-page" } : {}) };
+    appendFileSync(trace, JSON.stringify({ method: "tools/list", cursor, nextCursor: result.nextCursor, hasCatalog: result.tools.some(tool => tool.name === "skill_catalog") }) + "\n");
+  }
   else if (request.method === "tools/call") {
     const { name, arguments: args = {} } = request.params;
     try {
