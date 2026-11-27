@@ -28,6 +28,7 @@ assert.deepEqual(Object.keys(mcp.mcpServers), ["kling-ai"]);
 assert.equal(mcp.mcpServers["kling-ai"].type, "http");
 const endpoint = "https://kling-ai-sgp.prt.kuaishou.com/mcp";
 assert.equal(mcp.mcpServers["kling-ai"].url, endpoint, "PRT MCP endpoint must match");
+assert.ok(read(".codex/config.toml").includes(`url = "${endpoint}"`), "PRT MCP endpoint must match in Codex config");
 const portable = json("mcp.json");
 assert.deepEqual(Object.keys(portable.mcpServers), ["kling-ai"]);
 assert.equal(portable.mcpServers["kling-ai"].url, endpoint, "PRT MCP endpoint must match");

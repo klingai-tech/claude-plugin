@@ -10,7 +10,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 function fixture(t) {
   const directory = mkdtempSync(join(tmpdir(), "claude-plugin-test-"));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
-  for (const path of ["package.json", "plugin.json", "gemini-extension.json", ".claude-plugin", ".mcp.json", "mcp.json", "README.md", "LICENSE", "scripts", "skills"]) {
+  for (const path of ["package.json", "plugin.json", "gemini-extension.json", ".claude-plugin", ".codex", ".mcp.json", "mcp.json", "README.md", "LICENSE", "scripts", "skills"]) {
     cpSync(join(root, path), join(directory, path), { recursive: true });
   }
   return directory;
@@ -93,6 +93,7 @@ for (const [label, mutate, expected] of [
     `${path} version mismatch`, (dir) => changeJson(dir, path, (v) => { v.version = "9.0.0"; }), /versions must match/,
   ]),
   ["wrong MCP endpoint", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers["kling-ai"].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
+  ["wrong Codex MCP endpoint", (dir) => writeFileSync(join(dir, ".codex/config.toml"), '[mcp_servers.kling-ai]\nurl = "https://example.invalid/mcp"\n'), /PRT MCP endpoint/],
   ["wrong portable MCP endpoint", (dir) => changeJson(dir, "mcp.json", (v) => { v.mcpServers["kling-ai"].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
   ["wrong Gemini MCP endpoint", (dir) => changeJson(dir, "gemini-extension.json", (v) => { Object.values(v.mcpServers)[0].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
   ["PRT endpoint must not append plugin", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers["kling-ai"].url += "/plugin"; }), /PRT MCP endpoint/],
