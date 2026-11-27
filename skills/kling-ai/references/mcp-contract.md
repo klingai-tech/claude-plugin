@@ -5,6 +5,7 @@ This reference records only stable tool-level constraints. Always take models, d
 ## Tool groups
 
 - Discovery and account: `who_am_i`, `query_membership_and_credits`, `logout`
+- Official workflow discovery, when available: `skill_catalog` (list, read entry by exact ID, read package file by ID and listed path)
 - Generation and status: `text_to_image`, `image_to_image`, `text_to_video`, `image_to_video`, `omni_ref_video`, `motion_control`, `query_tasks`
 - Media and reuse: `file_upload`, `motion_library_list`, `element_create`, `element_list`, `element_get`, `element_update`, `element_delete`
 

@@ -16,6 +16,9 @@ const mcp = json(".mcp.json");
 assert.equal(plugin.name, "kling-ai");
 assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
 assert.equal(plugin.version, pkg.version, "plugin and package versions must match");
+for (const path of ["plugin.json", "gemini-extension.json"]) {
+  assert.equal(json(path).version, pkg.version, `${path} and package versions must match`);
+}
 assert.equal(plugin.skills, "./skills/");
 assert.equal(plugin.mcpServers, "./.mcp.json");
 assert.deepEqual(marketplace.plugins.map(({ name, source }) => ({ name, source })), [
@@ -23,7 +26,14 @@ assert.deepEqual(marketplace.plugins.map(({ name, source }) => ({ name, source }
 ]);
 assert.deepEqual(Object.keys(mcp.mcpServers), ["kling-ai"]);
 assert.equal(mcp.mcpServers["kling-ai"].type, "http");
-assert.equal(mcp.mcpServers["kling-ai"].url, "https://kling.ai/mcp/plugin");
+const endpoint = "https://kling-ai-sgp.prt.kuaishou.com/mcp";
+assert.equal(mcp.mcpServers["kling-ai"].url, endpoint, "PRT MCP endpoint must match");
+const portable = json("mcp.json");
+assert.deepEqual(Object.keys(portable.mcpServers), ["kling-ai"]);
+assert.equal(portable.mcpServers["kling-ai"].url, endpoint, "PRT MCP endpoint must match");
+const geminiServers = Object.values(json("gemini-extension.json").mcpServers);
+assert.equal(geminiServers.length, 1);
+assert.equal(geminiServers[0].url, endpoint, "PRT MCP endpoint must match");
 
 const skills = ["kling-ai", "kling-ai-generate-image", "kling-ai-generate-video"];
 for (const name of skills) {

@@ -5,6 +5,10 @@ description: Write Kling AI / 可灵 video prompts and storyboards, prepare vide
 
 # Kling AI video generation
 
+Use this entry first for routing, including prompt-only requests: follow [official workflow routing](../kling-ai/references/official-skills.md) before applying the creative rules below. If an official Skill is already active or is selected, stop using this Skill and its references for that objective; follow the official package instead. If the catalog is absent or unmatched, continue with the bundled workflow unless the user explicitly required an official Skill. A catalog/read failure does not permit fallback.
+
+If routing selects or retains `direct`, stop here and use the routing reference's direct execution path. None of the prompt guidance, workflow steps, model preferences or quality defaults below apply. Continue an existing `bundled` route without rediscovering the catalog.
+
 Deliver the user's current step. Use the execution workflow only when preparing or submitting generation. The [core Kling Skill](../kling-ai/SKILL.md) owns OAuth, billing, task identity and result handling.
 
 ## Choose the current step

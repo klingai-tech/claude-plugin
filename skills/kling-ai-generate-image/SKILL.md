@@ -5,6 +5,10 @@ description: Write or refine Kling AI image prompts, including prompt-only reque
 
 # Kling AI image generation
 
+Use this entry first for routing, including prompt-only requests: follow [official workflow routing](../kling-ai/references/official-skills.md) before applying the creative rules below. If an official Skill is already active or is selected, stop using this Skill and its references for that objective; follow the official package instead. If the catalog is absent or unmatched, continue with the bundled workflow unless the user explicitly required an official Skill. A catalog/read failure does not permit fallback.
+
+If routing selects or retains `direct`, stop here and use the routing reference's direct execution path. None of the prompt guidance, workflow steps, model preferences or quality defaults below apply. Continue an existing `bundled` route without rediscovering the catalog.
+
 For prompt-only work, use [prompt construction](references/prompt-construction.md)
 to decide whether the prompt needs edits, then return the requested prompt.
 Preserve composition requirements such as left-side copy space.

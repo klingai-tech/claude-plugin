@@ -2,6 +2,8 @@
 
 Read after [capability discovery](capability-discovery.md). Use the chosen tool/model pair's complete live `arguments`, `inputs`, defaults, enums, and conditional constraints. These rules do not supply a static model or specification table.
 
+For the `direct` route, use this reference only to validate and encode the original prompt, confirmed settings and inputs. Skip bundled quality, duration, composition and content defaults. Clarify missing material settings or unsupported combinations without rewriting the prompt or silently changing confirmed values.
+
 ## Request and output settings
 
 - Treat the model's arguments and inputs as field allowlists. Satisfy required fields and dependencies; omit undeclared fields and irrelevant optional fields. When there are no inputs, omit `inputs` unless the tool schema requires otherwise.

@@ -1,4 +1,6 @@
-# Kling AI for Claude · Global
+# Kling AI for Claude · Global PRT
+
+This `prt` branch uses `https://kling-ai-sgp.prt.kuaishou.com/mcp`. For local PRT review, clone this branch and load it with `claude --plugin-dir /absolute/path/to/claude-plugin`. Marketplace installation instructions below refer to the public release.
 
 Create and edit images, generate videos, reuse Elements, and check your Kling
 tasks and credits in Claude. This plugin uses your Global Kling account at
@@ -89,16 +91,16 @@ Start Gemini CLI, then run `/mcp auth kling-ai-global-plugin` to authorize your 
 ### Connect MCP manually or use the CLI
 
 Use one Kling integration per assistant. The plugin already registers
-`https://kling.ai/mcp/plugin` for you.
+`https://kling-ai-sgp.prt.kuaishou.com/mcp` for you.
 
-- **Manual MCP** — In Claude web or desktop, open **Plugins** (or **Customize → Connectors**), add `https://kling.ai/mcp` as a custom connector, then select **Connect** and authorize your Global Kling account.
+- **Manual MCP** — In Claude web or desktop, open **Plugins** (or **Customize → Connectors**), add `https://kling-ai-sgp.prt.kuaishou.com/mcp` as a custom connector, then select **Connect** and authorize your Global Kling account.
 - **Standalone CLI** — To use Kling from the terminal, run `npm i -g @klingai/cli-global --registry=https://registry.npmjs.org`, then `kling login` and `kling --help`.
 
 [Official instructions for other MCP clients and CLI commands](https://kling.ai/app/mcp/guide)
 
 ### Connect in VS Code and GitHub Copilot
 
-[Add the official Global MCP to VS Code](https://vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522kling-ai-global%2522%252C%2522type%2522%253A%2522http%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fkling.ai%252Fmcp%252Fplugin%2522%257D)
+[Add the official Global MCP to VS Code](https://vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522kling-ai-global%2522%252C%2522type%2522%253A%2522http%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fkling-ai-sgp.prt.kuaishou.com%252Fmcp%2522%257D)
 
 The link opens a configuration preview. Review the endpoint, install it, and complete OAuth with your Global Kling account. Image and video generation uses Global Kling credits.
 
@@ -106,12 +108,12 @@ The link opens a configuration preview. Review the endpoint, install it, and com
 
 This plugin contains:
 
-- a remote OAuth MCP connection to the Global endpoint `https://kling.ai/mcp/plugin`;
+- a remote OAuth MCP connection to the Global endpoint `https://kling-ai-sgp.prt.kuaishou.com/mcp`;
 - three Claude Code Skills with shared connection and billing rules:
 
 | Skill | Purpose |
 | --- | --- |
-| `kling-ai` | Request routing, Elements, motion-library browsing, uploads, credits, task status, and account switching |
+| `kling-ai` | Official workflow discovery and routing, Elements, motion-library browsing, uploads, credits, task status, and account switching |
 | `kling-ai-generate-image` | Text-to-image, image-to-image, reference handling, prompt construction, and image scene guidance |
 | `kling-ai-generate-video` | Text-to-video, image-to-video, omni reference, keyframes, supported audio inputs, motion control, and single-shot or multi-shot planning |
 
@@ -134,6 +136,51 @@ directories, pass the archive path to `claude --plugin-dir`.
 ## Use
 
 Ask Claude in natural language. You can name the model you want to use.
+
+### Official creative workflow Skills
+
+Ask “What official Kling Skills are available?” or “Use an official Kling Skill
+to make a product brand film.” When the connected MCP exposes `skill_catalog`,
+Claude lists the current workflows, selects a matching Skill, reads its entry
+and required package files, and follows that workflow. The catalog supplies the
+current names, descriptions, and versions; availability can vary by connection.
+The local Skill first routes each new creative objective, including prompt-only
+writing and standalone images/videos with complete prompts. If you explicitly ask
+to preserve a completed prompt/plan and skip creative workflows, it instead uses
+direct execution: it keeps your prompt and confirmed settings, checks only what
+execution requires, and submits the approved intent at most once. A complete prompt
+or “directly generate” alone does not skip routing. Otherwise it checks the remote
+catalog before applying bundled creative rules: a match hands off to the remote
+package; an absent catalog tool or no match uses the bundled workflow. An exact
+user-supplied ID is read directly when supported; other new objectives use a fresh
+catalog. Text-only requests still end with text, without preparing or submitting
+generation just because a workflow was selected.
+If you explicitly ask to execute a completed plan and skip creative workflows,
+the assistant preserves the original prompt and settings, skips both creative
+routes, and performs only necessary execution and authorization checks.
+Skill names, IDs, counts, and categories
+are not fixed in the plugin, so newly added Skills can be used without a plugin
+update.
+
+Selecting an official Skill hands the task over to that package. The three
+bundled Skills stop supplying workflow instructions for that task, including
+their image/video prompt rules and generation defaults. References inside the
+official package are read from that same package, even when their filenames
+match a bundled Skill. Follow-ups continue with the selected official workflow.
+User inputs, generated artifacts, and review evidence remain readable after handoff.
+
+For the same objective, follow-ups retain the selected `direct`, `bundled`, or
+`remote` route. A remote route retains its exact package ID/version and required
+file load progress. A newly available catalog does not switch an existing local
+route. Conversation and handoff summaries preserve the current step, decisions,
+confirmed settings, completed stages, task IDs and submission state. A failed
+required read or unexpected package version blocks execution with progress kept.
+
+If the catalog tool is absent or has no matching workflow, Claude uses the bundled route unless
+you explicitly requested an official Skill. A failed catalog request or missing
+file during an official workflow is reported without silently switching routes.
+Catalog discovery does not submit a generation; user authorization and live
+MCP requirements still apply.
 
 ### Suggested prompts
 
@@ -236,6 +283,14 @@ documentation. It does not submit paid generation tasks or prove account
 access to a model; live routing and generation still require an authorized
 Claude Code connection.
 
+`npm run test:routing` runs the agent against an isolated stdio MCP fixture.
+It checks actual tool-call order, successful workflow and reference reads,
+complete handoff, continuation, and failure handling. The fixture has no
+provider client and creates no media or paid Kling jobs. The host needs working
+model access. Use `npm run test:routing -- --host codex` for additional Codex
+evidence; this does not replace Claude Code host acceptance. Pass
+`--case complete-prompt` for one case or `--help` for source and output options.
+
 For Claude's component validation, inspect the per-file `contents` in
 `claude plugin validate skills --strict --json`. An empty `contents` array
 does not establish that the Skills were checked. Local validation also does
@@ -255,7 +310,7 @@ repository's validation covers the Claude Code package.
 
 ## Install in Kiro
 
-[![Add to Kiro](https://kiro.dev/images/add-to-kiro.svg)](https://kiro.dev/launch/mcp/add?name=Kling+AI+Global&config=%7B%22url%22%3A%22https%3A%2F%2Fkling.ai%2Fmcp%2Fplugin%22%2C%22disabled%22%3Afalse%2C%22autoApprove%22%3A%5B%5D%7D)
+[![Add to Kiro](https://kiro.dev/images/add-to-kiro.svg)](https://kiro.dev/launch/mcp/add?name=Kling+AI+Global&config=%7B%22url%22%3A%22https%3A%2F%2Fkling-ai-sgp.prt.kuaishou.com%2Fmcp%22%2C%22disabled%22%3Afalse%2C%22autoApprove%22%3A%5B%5D%7D)
 
 This one-click link adds the Global remote MCP server. Kiro handles OAuth
 for this endpoint. Image and video generation consumes credits in the signed-in

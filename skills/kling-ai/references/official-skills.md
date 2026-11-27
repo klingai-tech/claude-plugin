@@ -1,0 +1,46 @@
+# Official creative workflow Skills
+
+Use `skill_catalog` on the plugin's configured MCP connection to discover and read Kling's official workflow packages. It returns instructions for the assistant to follow; it does not itself submit a generation or install a local Skill. Keep the configured endpoint and native OAuth flow.
+
+## Discover and select
+
+Before creative routing, honor an explicit request to preserve a completed prompt/plan and skip creative workflows: use [direct execution](#direct-execution), even if a creative workflow was previously active. Prompt detail, “directly generate”, or quality alone is not evidence of a request to skip workflows.
+
+The routing contract is host-independent: local entry → inspect the current connection for a remote catalog → match remotely when available → activate exactly one workflow. Do not execute bundled creative steps while deciding the route. Use only the configured connection; a missing catalog does not require a new endpoint or installation.
+
+1. If a route is already selected for this objective, continue it without rediscovery: `direct` keeps execution-only behavior, `bundled` keeps the local workflow, and `remote` keeps the selected package and version. A newly available catalog or a changed catalog does not switch an active route. An explicit user request to change workflows permits a new selection; an unrelated objective always gets its own route.
+2. The local Skill is the routing entry, not yet the creative workflow. For every new creative objective, including prompt/storyboard writing alone and standalone image/video requests, and requests to list, explain, or use official/built-in Skills, obtain the configured connection's complete tool declarations (`tools/list`, following all pagination) before checking for `skill_catalog` or applying bundled creative rules. Reuse already verified declarations only while still valid for this same connection. A tool search miss, similar-tool result, truncated result, or incomplete declaration is not evidence that the catalog is absent. If complete declarations cannot be obtained or discovery fails, report the limitation, preserve the request and assets, and pause routing before bundled creative steps; asking for a workflow name or ID does not supply missing tool access. Follow live prerequisites and schema. Account operations, asset operations, and task queries alone do not need catalog discovery.
+3. If the user supplies an exact Skill ID and the live schema supports reading by ID, read that ID directly. Otherwise list with no `id` or `path`. Fetch a fresh catalog for each new objective requiring a match and whenever the user asks to refresh or see available Skills; do not reuse a previous objective's list. Use all returned `workflows[]` entries and their fields (`id`, `name`, `description`, `version`, `tools`) to explain the current catalog or select a matching workflow. Do not hardcode Skill names, IDs, counts, categories, or keyword allowlists. Newly returned entries are eligible immediately without a plugin update. Do not treat `tools: []` as meaning the Skill cannot be used. A list/explanation request ends with the requested explanation.
+4. Respect the user's selected Skill. Otherwise select a clear match from the live descriptions. If materially different workflows fit, clarify the intended deliverable or goal before selecting one.
+5. Read the entry with `id` equal to the user's exact ID or the selected `workflows[].id`, never its display name. Read its `content`, `files`, and required references from that package before executing creative or generation steps. Verify the returned ID/version against the selection when provided. A different version or incomplete load blocks that route; do not silently accept it or apply bundled steps. A complete prompt, storyboard, reference image, or short duration does not exempt the objective from this routing check. Catalog discovery alone is not generation authorization. For text-only work, return the requested text after routing; do not prepare generation, query models/credits, upload assets, or submit jobs merely because a package was loaded.
+
+## Direct execution
+
+- Bypass both remote and bundled creative methods. Do not call `skill_catalog`, invoke bundled generation Skills, read prompt/scene guidance, rewrite the prompt, apply local quality/model defaults, or add stages/assets. Keep the original prompt and confirmed settings exactly; mark any previous creative route inactive for this intent.
+- For text-only work, return the requested text without account queries or generation. For execution, use only the core Skill's [connection and task identity](../SKILL.md#connection-and-task-identity), [billing and single-submission](../SKILL.md#billing-and-single-submission), and [generation and results](../SKILL.md#generation-and-results) rules and their operational references. Validate required inputs, live capabilities/parameters, authorization and current credits. Missing or unsupported settings require clarification; they do not permit creative revision or silent substitution.
+- Submit the approved intent at most once. A known task number is queried, not resubmitted; an ambiguous attempt without a task number stays blocked. Save the `direct` route and task state for continuation.
+
+## Exclusive handoff
+
+- Tell the user briefly which official Skill will handle the task and why. From this point, that official package owns the objective. Stop applying the bundled `kling-ai`, `kling-ai-generate-image`, and `kling-ai-generate-video` workflows and their references, including their prompt rules, model/quality defaults, confirmation sequence, submission flow, and result handling. Do not merge two workflows or run both.
+- Read the official entry's required references and then additional files as needed using `skill_catalog` with the same `id` and a `path` chosen from its returned `files`. Resolve relative links within that package, not against this repository. An official package may contain files named `references/kling-ai/SKILL.md` or `references/kling-ai-generate-video/SKILL.md`; those are remote package files, not instructions to invoke the bundled Skills.
+- Continue reading user inputs, generated artifacts, and review evidence as needed. The handoff excludes bundled creative workflow instructions, not task data or host tools needed to read it.
+- Follow the official package's applicable steps within the user's requested scope and authorization. Loading it does not authorize extra deliverables, asset creation, or paid jobs. User instructions, host rules, native authentication, and live tool/model constraints still apply. Only invoke tools actually available on the current connection. Reading a package does not add missing execution tools.
+- On remote handoff, mark previously read bundled creative instructions and unapproved bundled defaults/plans inactive; do not reuse them as workflow requirements. This is a logical handoff, not deletion of files or conversation history. Retain user requirements, assets, approved decisions, task records, host rules, and live tool constraints.
+
+## Continuation state
+
+Keep one active route per objective in the conversation and any handoff/compaction summary. Save it after selection, delivery, submission, or a blocked step; no separate local state service is required. Record:
+
+- Objective and current requested step; route `direct`, `bundled`, or `remote` (with exact package ID/version for remote).
+- Package load progress: entry, required files successfully read, and any failed/missing file. Selection is not proof of a complete load. Resume missing reads using the same package/version; block if that version cannot be verified or recovered.
+- User decisions, original prompt, confirmed settings, asset roles and stable references; completed stages and next or blocked step. Exclude credentials, upload tickets and signed URLs from durable logs.
+- `taskTraceId`, known `generationId` values, last confirmed statuses, approval scope and submission state: not attempted, attempted without a confirmed ID, or submitted with an ID. Do not replay completed stages or create a replacement for a known or ambiguous task.
+
+An unrelated objective starts a fresh route without erasing the previous objective's task records. User intent, host rules and live constraints remain effective on every route.
+
+## Unavailable or unmatched
+
+- Use the bundled workflow only when complete declarations from the configured connection confirm that `skill_catalog` is absent, or a successful catalog lookup returns no match, and the user did not explicitly require an official Skill. Missing or incomplete discovery evidence blocks automatic fallback. Do not switch endpoints or add a second connection to obtain a catalog.
+- If the user explicitly requires an official Skill and the tool/entry is unavailable, report the limitation. Do not silently substitute a bundled Skill.
+- If listing or reading fails, report the observed failure, preserve the request and assets, and stop before generation; do not treat failure as no match or silently fall back. If an active package or required file becomes unavailable, preserve progress and report the blocked step; do not silently fall back or resubmit work.

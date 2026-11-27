@@ -10,7 +10,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 function fixture(t) {
   const directory = mkdtempSync(join(tmpdir(), "claude-plugin-test-"));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
-  for (const path of ["package.json", ".claude-plugin", ".mcp.json", "README.md", "LICENSE", "scripts", "skills"]) {
+  for (const path of ["package.json", "plugin.json", "gemini-extension.json", ".claude-plugin", ".mcp.json", "mcp.json", "README.md", "LICENSE", "scripts", "skills"]) {
     cpSync(join(root, path), join(directory, path), { recursive: true });
   }
   return directory;
@@ -41,7 +41,7 @@ test("isolated package validates without a parent repository or development docs
 
 test("release versions are not confused with model names", (t) => {
   const directory = fixture(t);
-  for (const path of ["package.json", ".claude-plugin/plugin.json"]) {
+  for (const path of ["package.json", "plugin.json", "gemini-extension.json", ".claude-plugin/plugin.json"]) {
     changeJson(directory, path, (value) => { value.version = "1.4.0"; });
   }
   const result = verify(directory);
@@ -89,7 +89,13 @@ test("new linked Skill references are discovered automatically", (t) => {
 
 for (const [label, mutate, expected] of [
   ["version mismatch", (dir) => changeJson(dir, ".claude-plugin/plugin.json", (v) => { v.version = "9.0.0"; }), /versions must match/],
-  ["wrong MCP endpoint", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers["kling-ai"].url = "https://example.invalid/mcp"; }), /kling\.ai\/mcp\/plugin/],
+  ...["plugin.json", "gemini-extension.json"].map((path) => [
+    `${path} version mismatch`, (dir) => changeJson(dir, path, (v) => { v.version = "9.0.0"; }), /versions must match/,
+  ]),
+  ["wrong MCP endpoint", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers["kling-ai"].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
+  ["wrong portable MCP endpoint", (dir) => changeJson(dir, "mcp.json", (v) => { v.mcpServers["kling-ai"].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
+  ["wrong Gemini MCP endpoint", (dir) => changeJson(dir, "gemini-extension.json", (v) => { Object.values(v.mcpServers)[0].url = "https://example.invalid/mcp"; }), /PRT MCP endpoint/],
+  ["PRT endpoint must not append plugin", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers["kling-ai"].url += "/plugin"; }), /PRT MCP endpoint/],
   ["second MCP connection", (dir) => changeJson(dir, ".mcp.json", (v) => { v.mcpServers.extra = {}; }), /extra/],
   ["wrong marketplace source", (dir) => changeJson(dir, ".claude-plugin/marketplace.json", (v) => { v.plugins[0].source = "../other"; }), /\.\.\/other/],
   ["missing Skill", (dir) => rmSync(join(dir, "skills/kling-ai-generate-video/SKILL.md")), /ENOENT/],

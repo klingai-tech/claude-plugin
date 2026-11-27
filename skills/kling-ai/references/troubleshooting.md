@@ -2,11 +2,11 @@
 
 ## MCP tools are missing
 
-Use `/mcp` to verify that the plugin's `kling-ai` server is enabled and points to `https://kling.ai/mcp/plugin`. After changing plugin files, run `/reload-plugins`; if the tool definitions remain stale, restart the Claude Code session and check its MCP diagnostics. Do not add a duplicate server or use an API key as a workaround.
+Use `/mcp` to verify that the plugin's `kling-ai` server is enabled and points to `https://kling-ai-sgp.prt.kuaishou.com/mcp`. After changing plugin files, run `/reload-plugins`; if the tool definitions remain stale, restart the Claude Code session and check its MCP diagnostics. Do not add a duplicate server or use an API key as a workaround.
 
 ## Endpoint migration and authorization
 
-This release uses the Global endpoint `https://kling.ai/mcp/plugin`. The previous `https://klingai.com/mcp` endpoint belongs to a different region. Before updating an existing connection, retain any outstanding task numbers and finish their status checks through the original connection. Disconnect the old host-managed OAuth session, update the plugin, then use `/mcp` to authorize the Global account. Never transfer credentials between hosts or assume that regional task history and credits are shared.
+This PRT branch uses the Global test endpoint `https://kling-ai-sgp.prt.kuaishou.com/mcp`. The previous `https://klingai.com/mcp` endpoint belongs to a different region. Before updating an existing connection, retain any outstanding task numbers and finish their status checks through the original connection. Disconnect the old host-managed OAuth session, update the plugin, then use `/mcp` to authorize the Global account. Never transfer credentials between hosts or assume that regional task history and credits are shared.
 
 For an authorization failure, use `/mcp`, select the plugin's Kling server, and complete native OAuth. If sign-out or account switching was explicitly requested, call the live `logout` tool as documented and reauthorize before other Kling calls. Do not paste tokens, construct OAuth URLs manually, or add an `oauth_resource` override. `/reload-plugins` reloads plugin files; it does not refresh OAuth credentials.
 

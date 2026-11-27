@@ -1,15 +1,16 @@
 ---
 name: kling-ai
-description: Handle Kling AI / 可灵 requests in Claude Code, including prompt-only planning, missing-asset next steps, generation preparation and approved image/video creation. Route creative work to the dedicated Skills; manage Elements, motion library, uploads, credits, existing tasks and account switching through the remote MCP.
+description: Handle Kling AI / 可灵 requests in Claude Code, discover and use official creative workflow Skills through skill_catalog, or route unmatched image/video work to the bundled Skills. Manage Elements, motion library, uploads, credits, existing tasks and account switching through the remote MCP.
 license: MIT
 ---
 
 # Kling AI for Claude Code
 
-Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/plugin`. `.mcp.json` is the connection source of truth. Do not switch regions, register a second Kling MCP, or start or depend on a local MCP server.
+Use only the remote Global MCP configured by this plugin: `https://kling-ai-sgp.prt.kuaishou.com/mcp`. `.mcp.json` is the connection source of truth. Do not switch regions, register a second Kling MCP, or start or depend on a local MCP server.
 
 ## Request routing
 
+- Start here as the local routing entry. Before applying bundled prompt rules, quality defaults, or production steps, follow [official workflow routing](references/official-skills.md) for every new creative objective, including text-only work; honor its explicit completed-plan execution bypass first. Retain an existing `direct`, `bundled`, or `remote` route and its continuation state for the same objective. Match new objectives against the current catalog rather than a fixed list of names or categories. If an official Skill is active or selected, hand off and stop applying this Skill and both bundled generation Skills to that objective. If the catalog is absent or has no match, use the bundled workflow unless the user explicitly required an official Skill. A catalog/read failure is not an unmatched result. The remaining creative instructions apply only to the bundled route; direct execution reuses only the operational rules linked by the routing reference.
 - Identify whether the user wants creative writing, a generation proposal, a submission, or an existing-task query. Creative writing ends with the requested prompt or plan. A generation proposal uses live capability discovery and ends with the settings for review. Submit only after approval under the billing rules below.
 - For image prompts, creation, or editing, follow [kling-ai-generate-image](../kling-ai-generate-image/SKILL.md).
 - For video prompts, storyboards, missing-image next steps, generation, model selection or motion transfer, follow [kling-ai-generate-video](../kling-ai-generate-video/SKILL.md). For generation preparation, discover relevant entry points including pure-text omni; prompt-only work and requesting a missing asset do not need account queries.
@@ -21,7 +22,7 @@ Use only the remote Global MCP configured by this plugin: `https://kling.ai/mcp/
 - To continue after recharging, follow [resuming after insufficient credits](references/tool-workflows.md#resuming-after-insufficient-credits). Check any known task before preparing a new submission. If the user only reports that they recharged, refresh the balance and explain the next step.
 - Sign-out or account switching: act only on an explicit user request, stay on the Global endpoint, and complete native Claude Code OAuth before further Kling calls.
 
-Call only tools present in the live tool list. An attachment alone does not determine its role; clarify only when first frame, tail frame, identity/product reference, editable source, motion source, or style reference would materially change the request.
+Call only tools present in the live tool list. Before new creative routing, obtain the configured connection's complete tool declarations, including all pagination. A search miss, truncated result, or incomplete declaration is not evidence that `skill_catalog` is absent; if complete declarations cannot be obtained, report the limitation and pause routing before bundled creative steps. An attachment alone does not determine its role; clarify only when first frame, tail frame, identity/product reference, editable source, motion source, or style reference would materially change the request.
 
 Read [asset workflows](references/asset-workflows.md) for Elements, the motion library, or uploads. Before generation, follow [capability discovery](references/capability-discovery.md), then [model parameters](references/model-parameters.md), [tool workflows](references/tool-workflows.md), and the [MCP contract](references/mcp-contract.md). Use [prompt examples](references/prompt-examples.md) for creative direction and [troubleshooting](references/troubleshooting.md) after a failure.
 

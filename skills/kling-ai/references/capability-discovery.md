@@ -2,6 +2,8 @@
 
 Read this before choosing a model for generation or a model recommendation. Status, credit, and library queries do not need model discovery.
 
+For a new creative objective, first follow [official workflow routing](official-skills.md). Except for its explicit `direct` bypass, tool discovery must include `skill_catalog` when available, not only generation tool names. Honor the live connection prerequisites, including `who_am_i` first when required. Its `availableModels` describes models, not creative workflows. If an official package is selected, hand off completely. Reuse any active route for the same objective without routing again. For `direct`, the checks below only validate execution: preserve the selected tool/model and confirmed settings, skip bundled model preferences and creative references, and clarify missing or unsupported choices instead of substituting defaults.
+
 ## Discover candidates
 
 1. Read the current connection's complete `tools/list`, following all pagination. Only discovered tools are candidates. A failed discovery is not an empty list and must not trigger a fallback to old capabilities.
@@ -14,11 +16,11 @@ Read this before choosing a model for generation or a model recommendation. Stat
 
 For text-driven video, query `text_to_video`; for image-driven video or keyframes, query `image_to_video`. When `omni_ref_video` exists, include it in the same capability query in both cases. For example, a pure-text request queries `["text_to_video", "omni_ref_video"]` when both exist and the filter is supported. Do not exclude omni reference because there are no attachments: the selected model's required inputs determine whether text-only generation is valid.
 
-Host tool-name search must discover these candidates, not just the legacy entry point. Search results for `text_to_video` alone are not a complete tool inventory. Motion transfer must retain its subject-image and motion-source requirements. See [video model routing](../../kling-ai-generate-video/references/model-routing.md) before choosing a video model.
+Host tool-name search must discover these candidates, not just the legacy entry point. Search results for `text_to_video` alone are not a complete tool inventory. Motion transfer must retain its subject-image and motion-source requirements. On the bundled route, see [video model routing](../../kling-ai-generate-video/references/model-routing.md) before choosing a video model.
 
 ## Selection and visibility
 
-- A user-specified available model takes precedence if it satisfies all required capabilities. Use [video model routing](../../kling-ai-generate-video/references/model-routing.md) for Kling 4.0 and Kling 4.0 Flash. For images, follow the [image model selection rules](../../kling-ai-generate-image/SKILL.md#mode-rules).
+- A user-specified available model takes precedence if it satisfies all required capabilities. On the bundled route, use [video model routing](../../kling-ai-generate-video/references/model-routing.md) for Kling 4.0 and Kling 4.0 Flash. For bundled images, follow the [image model selection rules](../../kling-ai-generate-image/SKILL.md#mode-rules).
 - In user-facing recommendations, identify the actual model variant using its returned name and explain how it fits the request. Recommend only models returned for the current account and avoid claims such as "the latest model" or "最新模型".
 - Required references, duration, sound, speed, and budget take precedence over version preferences. Do not silently drop requirements, increase output count, or lower specifications to make a model fit.
 - Reuse one successful discovery response during the same generation preparation. Refresh after reconnecting, switching account/endpoint, changed entitlements, a capability notification, or a rejected model/argument; query additional tools when the candidate set changes.
